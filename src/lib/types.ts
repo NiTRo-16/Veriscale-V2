@@ -112,6 +112,30 @@ export interface PhotoRow {
   uploaded_at: string;
 }
 
+/** A report with everything shown on its page. `people` maps profile id → full name. */
+export interface FullReport {
+  report: ReportRow;
+  readings: ReadingRow[];
+  photos: PhotoRow[];
+  people: Record<string, string>;
+}
+
+export interface ReportListItem {
+  id: string;
+  report_no: string;
+  status: ReportStatus;
+  manufacturer: string | null;
+  model: string | null;
+  serial_number: string | null;
+  accuracy_class: AccuracyClass | null;
+  calculated_result: StoredResult | null;
+  created_by: string;
+  creator_name: string;
+  created_at: string;
+  submitted_at: string | null;
+  reviewed_at: string | null;
+}
+
 export interface ActivityRow {
   id: number;
   actor_id: string | null;
