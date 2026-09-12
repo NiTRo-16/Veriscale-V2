@@ -1,0 +1,40 @@
+import type { ReactNode } from 'react';
+import { RESULT_LABEL, STATUS_LABEL } from '@/lib/labels';
+import type { LiveResult, ReportStatus } from '@/lib/types';
+
+export type Tone = 'green' | 'amber' | 'red' | 'blue' | 'gray';
+
+const TONES: Record<Tone, string> = {
+  green: 'bg-green-soft text-green-ink',
+  amber: 'bg-amber-soft text-amber-ink',
+  red: 'bg-red-soft text-red-ink',
+  blue: 'bg-blue-soft text-blue-ink',
+  gray: 'bg-hover text-ink-soft',
+};
+
+export function Pill({ tone = 'gray', children, className = '' }: { tone?: Tone; children: ReactNode; className?: string }) {
+  return (
+    <span
+      className={`inline-flex h-6 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 text-[11.5px] font-medium ${TONES[tone]} ${className}`}
+    >
+      {children}
+    </span>
+  );
+}
+
+export const STATUS_TONE: Record<ReportStatus, Tone> = {
+  draft: 'gray',
+  pending: 'amber',
+  approved: 'green',
+  failed: 'red',
+};
+
+export function StatusPill({ status }: { status: ReportStatus }) {
+  return <Pill tone={STATUS_TONE[status]}>{STATUS_LABEL[status]}</Pill>;
+}
+
+export function ResultText({ result }: { result: LiveResult | null }) {
+  if (!result) return <span className="text-faint">—</span>;
+  const color = result === 'pass' ? 'text-green-ink' : result === 'fail' ? 'text-red' : 'text-muted';
+  return <span className={`font-semibold ${color}`}>{RESULT_LABEL[result]}</span>;
+}
