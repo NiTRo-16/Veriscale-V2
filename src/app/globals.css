@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  --color-page: #f6f7f8;
+  --color-sidebar: #fbfbfb;
+  --color-card: #ffffff;
+  --color-line: #e8eaed;
+  --color-line-strong: #d9dde2;
+  --color-hover: #eef0f2;
+
+  --color-ink: #15171c;
+  --color-ink-soft: #3d424a;
+  --color-muted: #6b7079;
+  --color-faint: #9aa0a8;
+
+  --color-black: #111317;
+
+  --color-green: #1f9d55;
+  --color-green-ink: #177a43;
+  --color-green-soft: #e6f5ec;
+  --color-green-light: #6dbe8c;
+  --color-green-dark: #146b3e;
+
+  --color-amber: #e0a030;
+  --color-amber-ink: #8f6310;
+  --color-amber-soft: #fdf3dc;
+
+  --color-red: #b3261e;
+  --color-red-ink: #b3261e;
+  --color-red-soft: #fcebea;
+
+  --color-blue: #2f6fdb;
+  --color-blue-ink: #2459b8;
+  --color-blue-soft: #e8f0fc;
+
+  --color-purple: #8e5cd1;
+
+  --font-sans: var(--font-inter), "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, Menlo, Consolas, monospace;
+
+  --radius-card: 14px;
+}
+
+@layer base {
+  body {
+    background: var(--color-page);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-green);
+    outline-offset: 2px;
+  }
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+  .print-plain {
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+}

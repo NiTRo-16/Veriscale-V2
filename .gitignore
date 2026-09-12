@@ -13,3 +13,7 @@ test-results/
 
 # Generated design bundle (rebuilt from the .dc.html sources)
 design-mockups/veriscale-app-screens.html
+
+# Next.js generated
+next-env.d.ts
+*.tsbuildinfo
