@@ -7,12 +7,11 @@ import { logActivity } from '@/lib/activity';
 import { calculateReading, reportResult } from '@/lib/calc';
 import { isUuid, sanitizeDraftFields, sanitizeReadings, type ReadingDraft } from '@/lib/draft-fields';
 import { loadReport, loadRules } from '@/lib/data';
+import { PHOTO_BUCKET, isPhotoKind, isPhotoPathFor } from '@/lib/photos';
 import { submitProblems } from '@/lib/readiness';
 import { createAdminSupabase } from '@/lib/supabase/admin';
 import { createServerSupabase } from '@/lib/supabase/server';
 import type { Profile } from '@/lib/types';
-
-const PHOTO_BUCKET = 'report-photos';
 
 function refreshReportPages(reportId?: string) {
   revalidatePath('/dashboard');
@@ -175,5 +174,64 @@ export async function reviewReport(
     return toFailure(err);
   }
   refreshReportPages(reportId);
+  return ok(null);
+}
+
+export async function addPhoto(
+  reportId: string,
+  photo: { id: string; kind: string; storagePath: string; takenAt: string | null; readingId: string | null },
+): Promise<ActionResult> {
+  try {
+    const actor = await getActor();
+    const { sb } = await requireOwnDraft(actor, reportId);
+    if (!isUuid(photo?.id) || !isPhotoPathFor(reportId, photo.id, photo.storagePath) || !isPhotoKind(photo.kind)) {
+      throw new ActionError("That photo isn't valid.");
+    }
+
+    let readingId: string | null = null;
+    if (isUuid(photo.readingId)) {
+      const { data } = await sb.from('readings').select('id').eq('id', photo.readingId).eq('report_id', reportId).maybeSingle();
+      readingId = data ? photo.readingId : null;
+    }
+    const takenAt = photo.takenAt && !Number.isNaN(Date.parse(photo.takenAt)) ? new Date(photo.takenAt).toISOString() : null;
+
+    const { error } = await sb.from('photos').insert({
+      id: photo.id,
+      report_id: reportId,
+      reading_id: readingId,
+      kind: photo.kind,
+      storage_path: photo.storagePath,
+      taken_at: takenAt,
+      uploaded_by: actor.id,
+    });
+    if (error) {
+      await sb.storage.from(PHOTO_BUCKET).remove([photo.storagePath]);
+      throw error;
+    }
+  } catch (err) {
+    return toFailure(err);
+  }
+  revalidatePath(`/reports/${reportId}`);
+  return ok(null);
+}
+
+export async function removePhoto(reportId: string, photoId: string): Promise<ActionResult> {
+  try {
+    const actor = await getActor();
+    const { sb } = await requireOwnDraft(actor, reportId);
+    if (!isUuid(photoId)) throw new ActionError('That photo could not be found.');
+    const { data, error } = await sb
+      .from('photos')
+      .delete()
+      .eq('id', photoId)
+      .eq('report_id', reportId)
+      .select('storage_path')
+      .maybeSingle<{ storage_path: string }>();
+    if (error) throw error;
+    if (data) await sb.storage.from(PHOTO_BUCKET).remove([data.storage_path]);
+  } catch (err) {
+    return toFailure(err);
+  }
+  revalidatePath(`/reports/${reportId}`);
   return ok(null);
 }
