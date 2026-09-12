@@ -1,0 +1,21 @@
+{
+  "pages": [
+    { "id": "page-1", "name": "Navy theme" },
+    { "id": "page-2", "name": "Light green theme" }
+  ],
+  "artboards": [
+    { "file": "Main.dc.html", "title": "Admin dashboard", "x": 0, "y": 0, "w": 1440, "h": 900, "page": "page-1" },
+    { "file": "NewTestReport.dc.html", "title": "New test report · technician", "x": 1540, "y": 0, "w": 1440, "h": 1960, "page": "page-1" },
+    { "file": "ReportDetail.dc.html", "title": "Report detail · reviewer", "x": 3080, "y": 0, "w": 1440, "h": 1500, "page": "page-1" },
+    { "file": "RulesAdmin.dc.html", "title": "Rules Admin", "x": 0, "y": 2120, "w": 1440, "h": 960, "page": "page-1" },
+    { "file": "Users.dc.html", "title": "Users", "x": 1540, "y": 2120, "w": 1440, "h": 900, "page": "page-1" },
+    { "file": "AuditLog.dc.html", "title": "Activity log", "x": 3080, "y": 2120, "w": 1440, "h": 900, "page": "page-1" },
+    { "file": "Login.dc.html", "title": "Sign-in", "x": 4620, "y": 2120, "w": 1440, "h": 900, "page": "page-1" },
+    { "file": "DashboardLight.dc.html", "title": "Admin dashboard · light green", "x": 0, "y": 0, "w": 1440, "h": 1000, "page": "page-2" }
+  ],
+  "annotations": [
+    { "id": "sample-data", "x": 0, "y": -200, "w": 460, "page": "page-1", "text": "VeriScale screens in the new theme.\nAll names, report numbers and readings are sample data." },
+    { "id": "light-direction", "x": 0, "y": -200, "w": 460, "page": "page-2", "text": "Light green direction for the admin dashboard.\nAll names, report numbers and counts are sample data." }
+  ],
+  "launch": { "view": "canvas", "page": "page-2" }
+}

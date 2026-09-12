@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap">
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Inter','IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;color:#14213D;background:#F3F5F9;-webkit-font-smoothing:antialiased}
+    a{color:#2C64C6;text-decoration:none} a:hover{color:#1F4FA3}
+    .mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+    .muted{color:#5B6472}
+    .ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+    .side{width:240px;flex-shrink:0;display:flex;flex-direction:column;background:linear-gradient(180deg,#14213D 0px,#1E3A6A 64px,#A7B9D6 116px,#D9E2EE 230px,#EEF2F7 560px,#F3F6FA 100%)}
+    .brand{display:flex;align-items:center;gap:12px;padding:20px 20px 18px;color:#fff}
+    .brand-name{font-size:20px;font-weight:600;letter-spacing:-.01em;line-height:1.1}
+    .brand-sub{margin-top:3px;font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+    .nav{display:flex;flex-direction:column;gap:4px;padding:44px 12px 12px}
+    .nav-label{padding:0 12px 6px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,33,61,.72)}
+    .nav-item{display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border-radius:8px;border:1px solid transparent;font-size:13.5px;font-weight:500;color:#14213D}
+    .nav-item .ic{color:#34445E}
+    .nav-item.on{background:#fff;border-color:#C6D5EC;box-shadow:0 1px 2px rgba(20,33,61,.08);color:#1F4FA3;font-weight:600}
+    .nav-item.on .ic{color:#2C64C6}
+    .main{flex:1;display:flex;flex-direction:column;min-width:0}
+    .top{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:#fff;border-bottom:1px solid #E3E8EF}
+    .top h1{margin:0;font-size:22px;font-weight:600;letter-spacing:-.01em}
+    .top h1 span{font-size:14px;font-weight:400;color:#5B6472;margin-left:6px}
+    .who{display:flex;align-items:center;gap:12px}
+    .who-n{font-size:13px;font-weight:500;text-align:right}
+    .who-r{font-size:11px;color:#5B6472;text-align:right}
+    .av{width:36px;height:36px;border-radius:999px;background:#2C64C6;color:#fff;font-size:12px;font-weight:600;display:grid;place-items:center}
+    .iconbtn{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;color:#5B6472;border:1px solid #E3E8EF;background:#fff}
+    .content{padding:28px;display:flex;flex-direction:column;gap:20px}
+    .card{background:#fff;border:1px solid #E3E8EF;border-radius:12px;box-shadow:0 1px 2px rgba(20,33,61,.05),0 8px 24px rgba(20,33,61,.04)}
+    .kpi{padding:18px 20px 20px;display:flex;flex-direction:column;gap:14px}
+    .card-t{font-size:15px;font-weight:600;color:#14213D;margin:0}
+    .card-s{font-size:12px;color:#5B6472;margin:3px 0 0}
+    .card-h{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;border-bottom:1px solid #EDF0F4}
+    .pill{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 10px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+    .pill-pass{background:#E3F3E8;color:#2E7D46}
+    .pill-warn{background:#FCF1DC;color:#9A6B0C}
+    .pill-fail{background:#FBEAE9;color:#B3261E}
+    .leg{display:flex;align-items:center;gap:10px}
+    .leg i{width:10px;height:10px;border-radius:3px;display:inline-block;flex-shrink:0}
+    .leg-v{font-size:18px;font-weight:600;line-height:1;min-width:30px}
+    .leg-l{font-size:12px;color:#5B6472}
+    .tbl{width:100%;border-collapse:collapse;font-size:13px}
+    .tbl th{padding:11px 20px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#5B6472;background:#F8FAFC;border-bottom:1px solid #E3E8EF}
+    .tbl td{padding:14px 20px;border-bottom:1px solid #EDF0F4;vertical-align:middle}
+    .tbl tr:last-child td{border-bottom:0}
+    .r{text-align:right}
+    .v-pass{color:#2E7D46;font-weight:600}
+    .v-fail{color:#B3261E;font-weight:600}
+    .step{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;position:relative;z-index:1}
+    .step-dot{width:28px;height:28px;border-radius:999px;display:grid;place-items:center}
+    .step-n{font-size:22px;font-weight:600;line-height:1}
+    .step-l{font-size:12px;color:#5B6472}
+  </style>
+</helmet>
+<div style="display:flex;width:1440px;min-height:900px;background:#F3F5F9">
+  <aside class="side">
+    <div class="brand">
+      <svg class="ic" viewBox="0 0 24 24" style="width:28px;height:28px;color:#fff"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="M7 21h10"></path><path d="M12 3v18"></path><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"></path></svg>
+      <div><div class="brand-name">VeriScale</div><div class="brand-sub">NAWI Report Studio</div></div>
+    </div>
+    <nav class="nav">
+      <div class="nav-label">Administration</div>
+      <div class="nav-item on"><svg class="ic" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>Dashboard</div>
+      <div class="nav-item"><svg class="ic" viewBox="0 0 24 24"><line x1="21" x2="14" y1="4" y2="4"></line><line x1="10" x2="3" y1="4" y2="4"></line><line x1="21" x2="12" y1="12" y2="12"></line><line x1="8" x2="3" y1="12" y2="12"></line><line x1="21" x2="16" y1="20" y2="20"></line><line x1="12" x2="3" y1="20" y2="20"></line><line x1="14" x2="14" y1="2" y2="6"></line><line x1="8" x2="8" y1="10" y2="14"></line><line x1="16" x2="16" y1="18" y2="22"></line></svg>Rules Admin</div>
+      <div class="nav-item"><svg class="ic" viewBox="0 0 24 24"><path d="M15 12h-5"></path><path d="M15 8h-5"></path><path d="M19 17V5a2 2 0 0 0-2-2H4"></path><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"></path></svg>Activity log</div>
+      <div class="nav-item"><svg class="ic" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Users</div>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <h1>Dashboard<span>(Monitor NAWI tests)</span></h1>
+      <div class="who">
+        <div><div class="who-n">Priya Nair</div><div class="who-r">Administrator</div></div>
+        <div class="av">PN</div>
+        <div class="iconbtn"><svg class="ic" viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line></svg></div>
+      </div>
+    </header>
+
+    <div class="content">
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px">
+        <section class="card kpi">
+          <div><h2 class="card-t">Report status</h2><p class="card-s">All reports</p></div>
+          <div style="display:flex;align-items:center;gap:24px;flex:1">
+            <div style="position:relative;width:150px;height:150px;flex-shrink:0">
+              <svg width="150" height="150" viewBox="0 0 150 150">
+                <g transform="rotate(-90 75 75)" fill="none" stroke-width="18">
+                  <circle cx="75" cy="75" r="54" stroke="#3F9A5C" stroke-dasharray="234.97 339.29" stroke-dashoffset="0"></circle>
+                  <circle cx="75" cy="75" r="54" stroke="#D08F16" stroke-dasharray="65.32 339.29" stroke-dashoffset="-236.97"></circle>
+                  <circle cx="75" cy="75" r="54" stroke="#9E1F18" stroke-dasharray="33.01 339.29" stroke-dashoffset="-304.29"></circle>
+                </g>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+                <div style="font-size:26px;font-weight:600;line-height:1">126</div>
+                <div style="margin-top:4px;font-size:11px;color:#5B6472">Total reports</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div class="leg"><i style="background:#3F9A5C"></i><span class="leg-v">88</span><span class="leg-l">Approved</span></div>
+              <div class="leg"><i style="background:#D08F16"></i><span class="leg-v">25</span><span class="leg-l">Pending</span></div>
+              <div class="leg"><i style="background:#9E1F18"></i><span class="leg-v">13</span><span class="leg-l">Failed</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card kpi">
+          <div><h2 class="card-t">Reviewed per week</h2><p class="card-s">Last 8 weeks</p></div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between">
+            <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:34px;font-weight:600;line-height:1;letter-spacing:-.02em">101</span><span class="muted" style="font-size:13px">reports</span></div>
+            <span class="pill pill-pass">87% approved</span>
+          </div>
+          <svg width="328" height="150" viewBox="0 0 328 150" style="font-family:'Inter',system-ui,sans-serif">
+            <line x1="26" x2="328" y1="10" y2="10" stroke="#EDF0F4" stroke-width="1"></line>
+            <line x1="26" x2="328" y1="67" y2="67" stroke="#EDF0F4" stroke-width="1"></line>
+            <line x1="26" x2="328" y1="124" y2="124" stroke="#DCE2EA" stroke-width="1"></line>
+            <text x="18" y="13" text-anchor="end" font-size="10" fill="#5B6472">20</text>
+            <text x="18" y="70" text-anchor="end" font-size="10" fill="#5B6472">10</text>
+            <text x="18" y="127" text-anchor="end" font-size="10" fill="#5B6472">0</text>
+            <g fill="#2C64C6">
+              <path d="M34.9 124V76.7Q34.9 72.7 38.9 72.7H50.9Q54.9 72.7 54.9 76.7V124Z"></path>
+              <path d="M72.6 124V59.6Q72.6 55.6 76.6 55.6H88.6Q92.6 55.6 92.6 59.6V124Z"></path>
+              <path d="M110.4 124V48.2Q110.4 44.2 114.4 44.2H126.4Q130.4 44.2 130.4 48.2V124Z"></path>
+              <path d="M148.1 124V65.3Q148.1 61.3 152.1 61.3H164.1Q168.1 61.3 168.1 65.3V124Z"></path>
+              <path d="M185.9 124V42.5Q185.9 38.5 189.9 38.5H201.9Q205.9 38.5 205.9 42.5V124Z"></path>
+              <path d="M223.6 124V53.9Q223.6 49.9 227.6 49.9H239.6Q243.6 49.9 243.6 53.9V124Z"></path>
+              <path d="M261.4 124V36.8Q261.4 32.8 265.4 32.8H277.4Q281.4 32.8 281.4 36.8V124Z"></path>
+              <path d="M299.1 124V65.3Q299.1 61.3 303.1 61.3H315.1Q319.1 61.3 319.1 65.3V124Z"></path>
+            </g>
+            <text x="271.4" y="27" text-anchor="middle" font-size="10.5" font-weight="600" fill="#14213D">16</text>
+            <g font-size="9.5" fill="#5B6472" text-anchor="middle">
+              <text x="44.9" y="142">20 Jul</text>
+              <text x="82.6" y="142">27 Jul</text>
+              <text x="120.4" y="142">3 Aug</text>
+              <text x="158.1" y="142">10 Aug</text>
+              <text x="195.9" y="142">17 Aug</text>
+              <text x="233.6" y="142">24 Aug</text>
+              <text x="271.4" y="142">31 Aug</text>
+              <text x="309.1" y="142">7 Sep</text>
+            </g>
+          </svg>
+        </section>
+
+        <section class="card kpi">
+          <div><h2 class="card-t">Report progress</h2><p class="card-s">From submitted to approved</p></div>
+          <div style="position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-top:10px">
+            <div style="position:absolute;top:13px;left:16.66%;width:33.34%;height:2px;background:#2C64C6"></div>
+            <div style="position:absolute;top:13px;left:50%;width:33.34%;height:2px;background:#CBD3DE"></div>
+            <div class="step">
+              <div class="step-dot" style="background:#2C64C6;color:#fff"><svg class="ic" viewBox="0 0 24 24" style="width:14px;height:14px;stroke-width:2.5"><path d="M20 6 9 17l-5-5"></path></svg></div>
+              <div class="step-n">126</div><div class="step-l">Submitted</div>
+            </div>
+            <div class="step">
+              <div class="step-dot" style="background:#2C64C6;color:#fff"><svg class="ic" viewBox="0 0 24 24" style="width:14px;height:14px;stroke-width:2.5"><path d="M20 6 9 17l-5-5"></path></svg></div>
+              <div class="step-n">101</div><div class="step-l">Reviewed</div>
+            </div>
+            <div class="step">
+              <div class="step-dot" style="background:#fff;border:2px solid #D08F16"><span style="width:10px;height:10px;border-radius:999px;background:#D08F16"></span></div>
+              <div class="step-n">88</div><div class="step-l">Approved</div>
+            </div>
+          </div>
+          <div style="margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:8px;background:#FCF1DC;color:#9A6B0C;font-size:12px;font-weight:500">
+            <span style="display:flex;align-items:center;gap:8px"><svg class="ic" viewBox="0 0 24 24" style="width:15px;height:15px"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>25 reports waiting for review</span>
+            <span style="display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:6px;background:#fff;border:1px solid #E8D3A6;color:#1F4FA3;font-size:12px;font-weight:500">Review now</span>
+          </div>
+        </section>
+      </div>
+
+      <section class="card" style="overflow:hidden">
+        <div class="card-h"><div><h2 class="card-t">All reports</h2><p class="card-s">Most recent first</p></div></div>
+        <table class="tbl">
+          <thead><tr><th>Report no.</th><th>Instrument model</th><th>Manufacturer</th><th>Class</th><th>Result</th><th class="r">Date</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="mono" style="font-weight:500">VS-2026-014</td><td style="font-weight:500">TW-150 Platform Scale</td><td class="muted">Acme Weighing Systems</td><td>III</td>
+              <td><span class="v-pass">Pass</span></td><td class="r mono">11 Sep 2026</td><td><span class="pill pill-pass">Approved</span></td>
+            </tr>
+            <tr>
+              <td class="mono" style="font-weight:500">VS-2026-013</td><td style="font-weight:500">EC-30 Counter Scale</td><td class="muted">Meridian Instruments</td><td>III</td>
+              <td><span class="v-fail">Fail</span><span class="muted" style="font-size:12px"> · error too high</span></td><td class="r mono">11 Sep 2026</td><td><span class="pill pill-fail">Failed</span></td>
+            </tr>
+            <tr>
+              <td class="mono" style="font-weight:500">VS-2026-012</td><td style="font-weight:500">LX-220 Analytical Balance</td><td class="muted">Kestrel Labware</td><td>I</td>
+              <td><span class="v-pass">Pass</span></td><td class="r mono">10 Sep 2026</td><td><span class="pill pill-warn">Pending</span></td>
+            </tr>
+            <tr>
+              <td class="mono" style="font-weight:500">VS-2026-011</td><td style="font-weight:500">PB-600 Bench Scale</td><td class="muted">Acme Weighing Systems</td><td>III</td>
+              <td><span class="v-pass">Pass</span></td><td class="r mono">10 Sep 2026</td><td><span class="pill pill-pass">Approved</span></td>
+            </tr>
+            <tr>
+              <td class="mono" style="font-weight:500">VS-2026-010</td><td style="font-weight:500">HX-5000 Weighbridge Indicator</td><td class="muted">Northline Scales</td><td>IIII</td>
+              <td><span class="v-fail">Fail</span><span class="muted" style="font-size:12px"> · error too high</span></td><td class="r mono">09 Sep 2026</td><td><span class="pill pill-warn">Pending</span></td>
+            </tr>
+            <tr>
+              <td class="mono" style="font-weight:500">VS-2026-009</td><td style="font-weight:500">MB-3 Precision Balance</td><td class="muted">Kestrel Labware</td><td>II</td>
+              <td><span class="v-pass">Pass</span></td><td class="r mono">08 Sep 2026</td><td><span class="pill pill-pass">Approved</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap">
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Inter','IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;color:#14213D;background:#F3F5F9;-webkit-font-smoothing:antialiased}
+    a{color:#2C64C6;text-decoration:none} a:hover{color:#1F4FA3}
+    .mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+    .muted{color:#5B6472}
+    .ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+    .side{width:240px;flex-shrink:0;display:flex;flex-direction:column;background:linear-gradient(180deg,#14213D 0px,#1E3A6A 64px,#A7B9D6 116px,#D9E2EE 230px,#EEF2F7 560px,#F3F6FA 100%)}
+    .brand{display:flex;align-items:center;gap:12px;padding:20px 20px 18px;color:#fff}
+    .brand-name{font-size:20px;font-weight:600;letter-spacing:-.01em;line-height:1.1}
+    .brand-sub{margin-top:3px;font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+    .nav{display:flex;flex-direction:column;gap:4px;padding:44px 12px 12px}
+    .nav-label{padding:0 12px 6px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,33,61,.72)}
+    .nav-item{display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border-radius:8px;border:1px solid transparent;font-size:13.5px;font-weight:500;color:#14213D}
+    .nav-item .ic{color:#34445E}
+    .nav-item.on{background:#fff;border-color:#C6D5EC;box-shadow:0 1px 2px rgba(20,33,61,.08);color:#1F4FA3;font-weight:600}
+    .nav-item.on .ic{color:#2C64C6}
+    .main{flex:1;display:flex;flex-direction:column;min-width:0}
+    .top{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:#fff;border-bottom:1px solid #E3E8EF}
+    .top h1{margin:0;font-size:22px;font-weight:600;letter-spacing:-.01em}
+    .top h1 span{font-size:14px;font-weight:400;color:#5B6472;margin-left:6px}
+    .who{display:flex;align-items:center;gap:12px}
+    .who-n{font-size:13px;font-weight:500;text-align:right}
+    .who-r{font-size:11px;color:#5B6472;text-align:right}
+    .av{width:36px;height:36px;border-radius:999px;background:#2C64C6;color:#fff;font-size:12px;font-weight:600;display:grid;place-items:center}
+    .iconbtn{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;color:#5B6472;border:1px solid #E3E8EF;background:#fff}
+    .content{padding:28px;display:flex;flex-direction:column;gap:20px}
+    .card{background:#fff;border:1px solid #E3E8EF;border-radius:12px;box-shadow:0 1px 2px rgba(20,33,61,.05),0 8px 24px rgba(20,33,61,.04);overflow:hidden}
+    .card-h{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;border-bottom:1px solid #EDF0F4}
+    .card-t{font-size:15px;font-weight:600;color:#14213D;margin:0}
+    .card-s{font-size:12px;color:#5B6472;margin:3px 0 0}
+    .fld{display:flex;flex-direction:column;gap:6px}
+    .lbl{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#5B6472}
+    .inp{height:38px;border:1px solid #D5DCE6;border-radius:8px;padding:0 12px;font-size:13px;color:#14213D;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .ph{color:#8A93A3}
+    .hint{font-size:11px;color:#5B6472}
+    .btn{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:8px;font-size:13px;font-weight:500;border:1px solid transparent;white-space:nowrap}
+    .btn-primary{background:#2C64C6;color:#fff}
+    .pill{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 10px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+    .pill-blue{background:#E6EEFB;color:#1F4FA3}
+    .pill-slate{background:#EAEEF4;color:#4A5568}
+    .tbl{width:100%;border-collapse:collapse;font-size:13px}
+    .tbl th{padding:11px 20px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#5B6472;background:#F8FAFC;border-bottom:1px solid #E3E8EF}
+    .tbl td{padding:12px 20px;border-bottom:1px solid #EDF0F4;vertical-align:middle}
+    .tbl tr:last-child td{border-bottom:0}
+    .ua{width:30px;height:30px;border-radius:999px;display:grid;place-items:center;font-size:11px;font-weight:600;background:#E6EEFB;color:#1F4FA3;flex-shrink:0}
+  </style>
+</helmet>
+<div style="display:flex;width:1440px;min-height:900px;background:#F3F5F9">
+  <aside class="side">
+    <div class="brand">
+      <svg class="ic" viewBox="0 0 24 24" style="width:28px;height:28px;color:#fff"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="M7 21h10"></path><path d="M12 3v18"></path><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"></path></svg>
+      <div><div class="brand-name">VeriScale</div><div class="brand-sub">NAWI Report Studio</div></div>
+    </div>
+    <nav class="nav">
+      <div class="nav-label">Administration</div>
+      <div class="nav-item"><svg class="ic" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>Dashboard</div>
+      <div class="nav-item"><svg class="ic" viewBox="0 0 24 24"><line x1="21" x2="14" y1="4" y2="4"></line><line x1="10" x2="3" y1="4" y2="4"></line><line x1="21" x2="12" y1="12" y2="12"></line><line x1="8" x2="3" y1="12" y2="12"></line><line x1="21" x2="16" y1="20" y2="20"></line><line x1="12" x2="3" y1="20" y2="20"></line><line x1="14" x2="14" y1="2" y2="6"></line><line x1="8" x2="8" y1="10" y2="14"></line><line x1="16" x2="16" y1="18" y2="22"></line></svg>Rules Admin</div>
+      <div class="nav-item"><svg class="ic" viewBox="0 0 24 24"><path d="M15 12h-5"></path><path d="M15 8h-5"></path><path d="M19 17V5a2 2 0 0 0-2-2H4"></path><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"></path></svg>Activity log</div>
+      <div class="nav-item on"><svg class="ic" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Users</div>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <h1>Users<span>(Accounts &amp; roles)</span></h1>
+      <div class="who">
+        <div><div class="who-n">Priya Nair</div><div class="who-r">Administrator</div></div>
+        <div class="av">PN</div>
+        <div class="iconbtn"><svg class="ic" viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line></svg></div>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="card">
+        <div class="card-h"><div><h2 class="card-t">Add a new user</h2><p class="card-s">People can't sign up on their own — add every technician, reviewer and admin here.</p></div></div>
+        <div style="padding:20px;display:flex;flex-direction:column;gap:18px">
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px">
+            <div class="fld"><span class="lbl">Full name</span><div class="inp"><span class="ph">e.g. Rohan Desai</span></div></div>
+            <div class="fld"><span class="lbl">Email</span><div class="inp"><span class="ph">name@lab.example</span></div></div>
+            <div class="fld"><span class="lbl">Temporary password</span><div class="inp mono"><span class="ph">••••••••</span></div><span class="hint">At least 8 characters.</span></div>
+            <div class="fld"><span class="lbl">Role</span><div class="inp"><span>Lab Technician</span><svg class="ic muted" viewBox="0 0 24 24" style="width:16px;height:16px"><path d="m6 9 6 6 6-6"></path></svg></div></div>
+          </div>
+          <div style="display:flex">
+            <div class="btn btn-primary"><svg class="ic" viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line></svg>Create account</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><h2 class="card-t">All users</h2><span class="muted" style="font-size:12px">5 accounts</span></div>
+        <table class="tbl">
+          <thead><tr><th>Name</th><th>Email</th><th>Role</th></tr></thead>
+          <tbody>
+            <tr><td><div style="display:flex;align-items:center;gap:10px"><span class="ua">PN</span><span style="font-weight:500">Priya Nair</span></div></td><td class="muted">priya.nair@veriscale-lab.example</td><td><span class="pill pill-blue">Administrator</span></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:10px"><span class="ua">KR</span><span style="font-weight:500">Kavya Rao</span></div></td><td class="muted">kavya.rao@veriscale-lab.example</td><td><span class="pill pill-slate">Reviewer / Approver</span></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:10px"><span class="ua">MI</span><span style="font-weight:500">Meera Iyer</span></div></td><td class="muted">meera.iyer@veriscale-lab.example</td><td><span class="pill pill-slate">Reviewer / Approver</span></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:10px"><span class="ua">AM</span><span style="font-weight:500">Arjun Mehta</span></div></td><td class="muted">arjun.mehta@veriscale-lab.example</td><td><span class="pill pill-slate">Lab Technician</span></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:10px"><span class="ua">RD</span><span style="font-weight:500">Rohan Desai</span></div></td><td class="muted">rohan.desai@veriscale-lab.example</td><td><span class="pill pill-slate">Lab Technician</span></td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+*.log
+
+# Secrets — keep only the example file in git
+.env
+.env.*
+!.env.example
+
+# Generated design bundle (rebuilt from the .dc.html sources)
+design-mockups/veriscale-app-screens.html
