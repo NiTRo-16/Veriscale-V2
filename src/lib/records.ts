@@ -3,6 +3,7 @@
 import { toNum } from './calc';
 import { isUuid } from './draft-fields';
 import { WEIGHT_CLASSES } from './labels';
+import { LAB_TIME_ZONE } from './time-zone';
 import type { ReportStatus, TestStage, WeightClass, WeightState } from './types';
 
 /** A weight set whose check falls within this many days is "due soon". */
@@ -14,7 +15,7 @@ const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
 // ---- Dates (all YYYY-MM-DD, worked out in UTC so they never shift) ----
 
 /** Today's date in the lab's time zone. */
-export function todayDate(now: Date = new Date(), timeZone = process.env.NEXT_PUBLIC_TIME_ZONE || 'UTC'): string {
+export function todayDate(now: Date = new Date(), timeZone = LAB_TIME_ZONE): string {
   const parts = new Intl.DateTimeFormat('en-GB', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(now);
   const get = (type: string) => parts.find((p) => p.type === type)?.value ?? '';
   return `${get('year')}-${get('month')}-${get('day')}`;

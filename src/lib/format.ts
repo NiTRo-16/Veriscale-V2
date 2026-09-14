@@ -1,8 +1,10 @@
 // Display formatting. Months are spelled out by hand so output never depends
 // on the runtime's locale data (newer ICU prints "Sept" for en-GB).
+import { LAB_TIME_ZONE } from './time-zone';
+
 const DASH = '—';
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const TIME_ZONE = process.env.NEXT_PUBLIC_TIME_ZONE || 'UTC';
+const TIME_ZONE = LAB_TIME_ZONE;
 
 type DateLike = string | Date | null | undefined;
 
