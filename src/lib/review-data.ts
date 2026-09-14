@@ -2,6 +2,7 @@ import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { REPORT_LIST_COLUMNS, toListItem } from './data';
 import { isUuid } from './draft-fields';
+import type { ReportCheck, RiskLevel } from './risk';
 import type { ConditionSource, ReportListItem, StoredResult, TestStage } from './types';
 
 const REVIEW_COLUMNS = `${REPORT_LIST_COLUMNS}, test_stage, temperature_source, humidity_source, reviewed_by, review_note, sent_back_at, sent_back_by, send_back_note`;
@@ -22,18 +23,42 @@ export interface QueueItem extends ReviewListItem {
   photo_count: number;
   /** The stored result of each reading, in order. */
   results: Array<StoredResult | null>;
+  /** From the risk checks; null until they have run. */
+  risk: RiskLevel | null;
 }
 
 type Rows = Parameters<typeof toListItem>[0][];
 const toItems = (data: unknown): ReviewListItem[] =>
   ((data ?? []) as Rows).map((row) => ({ ...(row as object), ...toListItem(row) }) as unknown as ReviewListItem);
 
+// The risk checks table arrives with migration 0007; until it is run, carry on without checks.
+const MISSING_TABLE_CODES = new Set(['PGRST205', '42P01']);
+
+/** Saved risk checks for these reports (reviewers and admins only; technicians get none). */
+export async function loadReportChecks(sb: SupabaseClient, ids: readonly string[]): Promise<Map<string, ReportCheck>> {
+  const valid = ids.filter((id) => isUuid(id));
+  if (valid.length === 0) return new Map();
+  const { data, error } = await sb
+    .from('report_checks')
+    .select('report_id, risk, flags, photo_reading, checked_at')
+    .in('report_id', valid);
+  if (error) {
+    if (MISSING_TABLE_CODES.has(error.code)) {
+      console.warn('Risk checks are not set up yet: run supabase/migrations/0007_risk_checks.sql');
+      return new Map();
+    }
+    throw error;
+  }
+  return new Map(((data ?? []) as ReportCheck[]).map((check) => [check.report_id, check]));
+}
+
 async function withEvidence(sb: SupabaseClient, items: ReviewListItem[]): Promise<QueueItem[]> {
   if (items.length === 0) return [];
   const ids = items.map((r) => r.id);
-  const [photos, readings] = await Promise.all([
+  const [photos, readings, checks] = await Promise.all([
     sb.from('photos').select('report_id').in('report_id', ids),
     sb.from('readings').select('report_id, result').in('report_id', ids).order('position'),
+    loadReportChecks(sb, ids),
   ]);
   if (photos.error) throw photos.error;
   if (readings.error) throw readings.error;
@@ -43,7 +68,12 @@ async function withEvidence(sb: SupabaseClient, items: ReviewListItem[]): Promis
   const results = new Map<string, Array<StoredResult | null>>();
   for (const r of readings.data ?? []) results.set(r.report_id, [...(results.get(r.report_id) ?? []), r.result]);
 
-  return items.map((item) => ({ ...item, photo_count: photoCount.get(item.id) ?? 0, results: results.get(item.id) ?? [] }));
+  return items.map((item) => ({
+    ...item,
+    photo_count: photoCount.get(item.id) ?? 0,
+    results: results.get(item.id) ?? [],
+    risk: checks.get(item.id)?.risk ?? null,
+  }));
 }
 
 /** Pending reports, oldest submitted first. */

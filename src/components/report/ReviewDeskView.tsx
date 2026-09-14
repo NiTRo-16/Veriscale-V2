@@ -17,9 +17,11 @@ import {
   type HistoryStep,
 } from '@/lib/review';
 import type { ReviewListItem } from '@/lib/review-data';
+import type { ReportCheck } from '@/lib/risk';
 import type { ConditionSource, FullReport } from '@/lib/types';
 import { readingLabel, type PhotoWithUrl } from './ReportPhotos';
 import { ReviewDesk } from './ReviewDesk';
+import { RiskCard } from './RiskCard';
 
 function Detail({ label, children, wide = false }: { label: string; children: ReactNode; wide?: boolean }) {
   const empty = children === null || children === undefined || children === '';
@@ -68,11 +70,14 @@ export function ReviewDeskView({
   full,
   photos,
   earlier,
+  check,
   nextHref,
 }: {
   full: FullReport;
   photos: PhotoWithUrl[];
   earlier: ReviewListItem[];
+  /** The saved risk checks, or null before they have run. */
+  check: ReportCheck | null;
   nextHref: string;
 }) {
   const { report, readings, people } = full;
@@ -133,6 +138,8 @@ export function ReviewDeskView({
             </div>
           </dl>
         </Card>
+
+        <RiskCard reportId={report.id} check={check} />
 
         <Card
           title="Readings"

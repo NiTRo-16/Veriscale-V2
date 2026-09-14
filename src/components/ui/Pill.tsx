@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { DECISION_LABEL, RESULT_LABEL, SOURCE_LABEL, STATUS_LABEL } from '@/lib/labels';
+import { DECISION_LABEL, RESULT_LABEL, RISK_LABEL, SOURCE_LABEL, STATUS_LABEL } from '@/lib/labels';
+import type { RiskLevel } from '@/lib/risk';
 import type { ConditionSource, Decision, LiveResult, ReportStatus } from '@/lib/types';
 
 export type Tone = 'green' | 'amber' | 'red' | 'blue' | 'gray';
@@ -47,6 +48,13 @@ export const SOURCE_TONE: Record<ConditionSource, Tone> = { sensor: 'green', man
 
 export function SourcePill({ source }: { source: ConditionSource }) {
   return <Pill tone={SOURCE_TONE[source]}>{SOURCE_LABEL[source]}</Pill>;
+}
+
+export const RISK_TONE: Record<RiskLevel, Tone> = { low: 'green', medium: 'amber', high: 'red' };
+
+export function RiskPill({ risk }: { risk: RiskLevel | null }) {
+  if (!risk) return <span className="whitespace-nowrap text-[12px] text-muted">Not checked yet</span>;
+  return <Pill tone={RISK_TONE[risk]}>{RISK_LABEL[risk]}</Pill>;
 }
 
 export function ResultText({ result }: { result: LiveResult | null }) {

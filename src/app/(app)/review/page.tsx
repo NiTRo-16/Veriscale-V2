@@ -7,7 +7,7 @@ import { ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { AccountNotReady, NoAccess } from '@/components/ui/Notice';
 import { PageBody, PageHeader } from '@/components/ui/PageHeader';
-import { DecisionPill, ResultText, SourcePill } from '@/components/ui/Pill';
+import { DecisionPill, ResultText, RiskPill, SourcePill } from '@/components/ui/Pill';
 import { SegmentedTabs } from '@/components/ui/SegmentedTabs';
 import { StatTile } from '@/components/ui/StatTile';
 import { requireSession } from '@/lib/auth';
@@ -235,13 +235,14 @@ function WaitingTable({ items, days }: { items: QueueItem[]; days: (r: QueueItem
   }
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[980px] text-[13px]">
+      <table className="w-full min-w-[1080px] text-[13px]">
         <thead className={TABLE_HEAD}>
           <tr>
             <th className="px-5 py-2.5">Report</th>
             <th className="px-5 py-2.5">Instrument</th>
             <th className="px-5 py-2.5">Class</th>
             <th className="px-5 py-2.5">Calculated result</th>
+            <th className="px-5 py-2.5">Risk</th>
             <th className="px-5 py-2.5">Evidence</th>
             <th className="px-5 py-2.5">Tested by</th>
             <th className="px-5 py-2.5 text-right">Waiting</th>
@@ -259,6 +260,9 @@ function WaitingTable({ items, days }: { items: QueueItem[]; days: (r: QueueItem
                 <td className="px-5 py-3">
                   <ResultText result={r.calculated_result} />
                   <div className="text-[12px] text-muted">{tallyText(tallyReadings(r.results))}</div>
+                </td>
+                <td className="px-5 py-3">
+                  <RiskPill risk={r.risk} />
                 </td>
                 <td className="px-5 py-3">
                   <div className="flex flex-wrap items-center gap-2">

@@ -33,8 +33,8 @@ You need Node.js 20 or newer and a free [Supabase](https://supabase.com) account
 2. **Authentication → Sign In / Providers:** turn off "Allow new users to sign up". Accounts are
    added by an admin inside VeriScale.
 3. **SQL Editor:** run each file in [`supabase/migrations`](supabase/migrations) **in order**
-   (`0001` → `0004`). They create the tables, the access rules, the submit/review steps and the
-   private `report-photos` bucket.
+   (`0001` → `0007`). They create the tables, the access rules, the submit/review steps, the
+   private `report-photos` bucket, the review desk, the records and the risk checks.
 
 ### 2. Connect the app
 
@@ -48,6 +48,8 @@ Fill in `.env.local` from **Project Settings → API**:
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` — the publishable (or legacy "anon") key
 - `SUPABASE_SECRET_KEY` — the secret (or legacy "service_role") key. **Never commit this.**
 - `NEXT_PUBLIC_TIME_ZONE` — optional, e.g. `Asia/Kolkata`
+- `ANTHROPIC_API_KEY` — optional, from [console.anthropic.com](https://console.anthropic.com). Turns on
+  automatic photo reading in the risk checks. Server only — **never commit this.**
 
 ### 3. Install, create the first admin, run
 
@@ -84,6 +86,22 @@ project (never your real one):
 2. Put its URL and keys in `.env.test.local` (same names as `.env.local`).
 3. `npm run seed-test-users` and copy the printed `E2E_*` lines into `.env.test.local`.
 4. `npx playwright install chromium` (first time only), then `npm run test:e2e`.
+
+## Risk checks
+
+When a report is submitted, VeriScale checks it in the background and gives it a **Low**, **Medium** or
+**High** risk with plain reasons. Reviewers and admins see the result on the review desk and in the
+review queue; technicians don't. Reviewers still make every decision.
+
+- **Always on:** report filled in within minutes, photos with no time taken or taken on another day,
+  readings identical to an earlier report of the same instrument, every reading exactly zero error,
+  typed-in conditions identical to the technician's last report, and the same photo file attached to
+  another report.
+- **With `ANTHROPIC_API_KEY`:** Claude (`claude-opus-5`) reads each display photo linked to a reading
+  and the nameplate photo, and VeriScale flags values that don't match what was typed. Photos are scaled
+  down before they are sent.
+
+Reviewers can run the checks again from the review desk (for example after adding the key).
 
 ## Deploying
 

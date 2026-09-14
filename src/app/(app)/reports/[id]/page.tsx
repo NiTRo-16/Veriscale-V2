@@ -15,11 +15,14 @@ import { PHOTO_BUCKET } from '@/lib/photos';
 import { todayDate } from '@/lib/records';
 import { loadManufacturers, loadModels, loadWeightSets } from '@/lib/records-data';
 import { queuePosition } from '@/lib/review';
-import { loadEarlierReports, loadQueueIds } from '@/lib/review-data';
+import { loadEarlierReports, loadQueueIds, loadReportChecks } from '@/lib/review-data';
 import { createServerSupabase } from '@/lib/supabase/server';
 import type { PhotoRow } from '@/lib/types';
 
 const LINK_SECONDS = 60 * 60;
+
+// Running the risk checks again reads photos with AI, which can take a minute.
+export const maxDuration = 120;
 
 async function withLinks(supabase: Awaited<ReturnType<typeof createServerSupabase>>, photos: PhotoRow[]): Promise<PhotoWithUrl[]> {
   if (photos.length === 0) return [];
@@ -89,9 +92,10 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   const reportPhotos = <ReportPhotos photos={photos} readings={full.readings} />;
 
   if (report.status === 'pending' && (profile.role === 'reviewer' || profile.role === 'admin')) {
-    const [queueIds, earlier] = await Promise.all([
+    const [queueIds, earlier, checks] = await Promise.all([
       loadQueueIds(supabase),
       loadEarlierReports(supabase, report.serial_number, report.id),
+      loadReportChecks(supabase, [report.id]),
     ]);
     const queue = queuePosition(queueIds, report.id);
     return (
@@ -116,6 +120,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
             full={full}
             photos={photos}
             earlier={earlier}
+            check={checks.get(report.id) ?? null}
             nextHref={queue.afterDecision ? `/reports/${queue.afterDecision}` : '/review'}
           />
         </PageBody>

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { after } from 'next/server';
 import { ActionError, fail, getActor, ok, toFailure, type ActionResult } from '@/lib/actions';
 import { logActivity } from '@/lib/activity';
 import { calculateReading, reportResult } from '@/lib/calc';
@@ -11,6 +12,7 @@ import { REVIEW_CHECKS } from '@/lib/labels';
 import { PHOTO_BUCKET, isPhotoKind, isPhotoPathFor } from '@/lib/photos';
 import { submitProblems } from '@/lib/readiness';
 import { isOverdueOn, todayDate } from '@/lib/records';
+import { runReportChecks } from '@/lib/risk-checks';
 import { createAdminSupabase } from '@/lib/supabase/admin';
 import { createServerSupabase } from '@/lib/supabase/server';
 import type { Profile } from '@/lib/types';
@@ -171,6 +173,8 @@ export async function submitReport(reportId: string): Promise<ActionResult> {
       p_calculated: reportResult(results.map((r) => r.result)),
     });
     if (error) throw error;
+    // The risk checks read the photos, which takes a little while, so they run after the response.
+    after(() => runReportChecks(reportId).catch((err) => console.error('Risk checks failed', err)));
   } catch (err) {
     return toFailure(err);
   }
@@ -278,5 +282,19 @@ export async function removePhoto(reportId: string, photoId: string): Promise<Ac
     return toFailure(err);
   }
   revalidatePath(`/reports/${reportId}`);
+  return ok(null);
+}
+
+/** Runs a submitted report's risk checks again, e.g. after photo reading was turned on. */
+export async function checkReportAgain(reportId: string): Promise<ActionResult> {
+  try {
+    await getActor(['reviewer', 'admin']);
+    if (!isUuid(reportId)) throw new ActionError('This report could not be found.');
+    await runReportChecks(reportId);
+  } catch (err) {
+    return toFailure(err);
+  }
+  revalidatePath(`/reports/${reportId}`);
+  revalidatePath('/review');
   return ok(null);
 }

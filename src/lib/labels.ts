@@ -91,3 +91,9 @@ export const WEIGHT_STATE_LABEL: Record<WeightState, string> = {
   due_soon: 'Due soon',
   overdue: 'Overdue',
 };
+
+export const RISK_LABEL: Record<'low' | 'medium' | 'high', string> = {
+  low: 'Low risk',
+  medium: 'Medium risk',
+  high: 'High risk',
+};
