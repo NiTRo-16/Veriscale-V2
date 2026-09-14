@@ -33,8 +33,6 @@
   --color-blue-ink: #2459b8;
   --color-blue-soft: #e8f0fc;
 
-  --color-purple: #8e5cd1;
-
   --font-sans: var(--font-inter), "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, Menlo, Consolas, monospace;
 

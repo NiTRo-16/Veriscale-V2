@@ -61,7 +61,7 @@ export async function loadReport(sb: SupabaseClient, id: string): Promise<FullRe
   if (readings.error) throw readings.error;
   if (photos.error) throw photos.error;
 
-  const personIds = [report.created_by, report.reviewed_by].filter((v): v is string => Boolean(v));
+  const personIds = [report.created_by, report.reviewed_by, report.sent_back_by].filter((v): v is string => Boolean(v));
   const { data: profiles } = await sb.from('profiles').select('id, full_name').in('id', personIds);
 
   return {

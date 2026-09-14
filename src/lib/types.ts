@@ -6,6 +6,8 @@ export type ConditionSource = 'sensor' | 'manual' | 'weather';
 export type PhotoKind = 'nameplate' | 'display' | 'setup' | 'seals' | 'other';
 export type StoredResult = 'pass' | 'fail';
 export type LiveResult = StoredResult | 'incomplete';
+/** What a reviewer can do with a pending report. */
+export type Decision = 'approved' | 'sent_back' | 'failed';
 export type NumberLike = number | string | null | undefined;
 
 export interface AllowedErrorRule {
@@ -60,6 +62,48 @@ export interface ReportRow {
   reviewed_by: string | null;
   reviewed_at: string | null;
   review_note: string | null;
+  sent_back_at: string | null;
+  sent_back_by: string | null;
+  send_back_note: string | null;
+  review_checks: Record<string, boolean> | null;
+  /** The records picked in the draft editor, if any. The text columns above keep their own copy. */
+  manufacturer_id: string | null;
+  model_id: string | null;
+  weight_set_id: string | null;
+}
+
+export type WeightClass = 'E1' | 'E2' | 'F1' | 'F2' | 'M1' | 'M2' | 'M3';
+export type WeightState = 'in_date' | 'due_soon' | 'overdue';
+
+export interface Manufacturer {
+  id: string;
+  name: string;
+  created_by: string | null;
+  created_at: string;
+}
+
+export interface InstrumentModel {
+  id: string;
+  manufacturer_id: string;
+  name: string;
+  accuracy_class: AccuracyClass;
+  max_capacity_kg: number;
+  interval_e_g: number;
+  created_at: string;
+}
+
+export interface WeightSet {
+  id: string;
+  code: string;
+  description: string | null;
+  weight_class: WeightClass;
+  nominal_range: string | null;
+  certificate_no: string | null;
+  /** Date-only strings (YYYY-MM-DD). */
+  last_checked: string | null;
+  next_check: string;
+  created_at: string;
+  updated_at: string;
 }
 
 /** Report columns a technician may change on their own draft. */
@@ -82,6 +126,9 @@ export const EDITABLE_REPORT_FIELDS = [
   'weather_confirmed',
   'reference_weights',
   'remarks',
+  'manufacturer_id',
+  'model_id',
+  'weight_set_id',
 ] as const;
 
 export type EditableReportField = (typeof EDITABLE_REPORT_FIELDS)[number];

@@ -1,13 +1,16 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { AlertCircle, CalendarClock } from 'lucide-react';
+import { useState, type ReactNode } from 'react';
 import { Card } from '@/components/ui/Card';
-import { Field, Input, Textarea } from '@/components/ui/Field';
+import { Field, Input, Select, Textarea } from '@/components/ui/Field';
 import { Pill } from '@/components/ui/Pill';
 import { fieldProblem } from '@/lib/draft-fields';
+import { formatDate } from '@/lib/format';
 import { SOURCE_LABEL } from '@/lib/labels';
-import type { ConditionSource } from '@/lib/types';
-import type { DraftForm, SetField } from './draft-form';
+import { isDateOnly, isOverdueOn, weightSetSummary, weightStatus } from '@/lib/records';
+import type { ConditionSource, WeightSet } from '@/lib/types';
+import { OTHER_OPTION, type DraftForm, type PatchForm, type SetField } from './draft-form';
 import { UnitInput } from './UnitInput';
 
 function SourcePill({ source, confirmed }: { source: ConditionSource | null; confirmed: boolean }) {
@@ -19,17 +22,41 @@ function SourcePill({ source, confirmed }: { source: ConditionSource | null; con
 export function ConditionsSection({
   form,
   setField,
+  patchForm,
+  weightSets,
+  today,
   setCondition,
   actions,
   notice,
 }: {
   form: DraftForm;
   setField: SetField;
+  patchForm: PatchForm;
+  weightSets: WeightSet[];
+  today: string;
   setCondition: (key: 'temperature_c' | 'humidity_pct', value: string) => void;
   actions?: ReactNode;
   notice?: ReactNode;
 }) {
   const usesWeather = form.temperature_source === 'weather' || form.humidity_source === 'weather';
+
+  // A set can't be used once its check date is before the test date.
+  const picking = weightSets.length > 0;
+  const [typingWeights, setTypingWeights] = useState(() => !form.weight_set_id && form.reference_weights.trim() !== '');
+  const testDay = isDateOnly(form.test_date) ? form.test_date : today;
+  const pickedSet = weightSets.find((s) => s.id === form.weight_set_id) ?? null;
+  const pickedStatus = pickedSet ? weightStatus(pickedSet.next_check, testDay) : null;
+
+  const pickWeights = (value: string) => {
+    if (value === OTHER_OPTION) {
+      setTypingWeights(true);
+      patchForm({ weight_set_id: '' });
+      return;
+    }
+    setTypingWeights(false);
+    const set = weightSets.find((s) => s.id === value);
+    patchForm({ weight_set_id: set?.id ?? '', reference_weights: set ? weightSetSummary(set) : '' });
+  };
 
   return (
     <Card title="Test conditions" subtitle="Each reading shows where it came from." actions={actions}>
@@ -69,12 +96,56 @@ export function ConditionsSection({
             <Input id="test_date" type="date" value={form.test_date} onChange={(e) => setField('test_date', e.target.value)} />
           </Field>
           <Field label="Reference weights used" htmlFor="reference_weights" className="md:col-span-2">
-            <Input
-              id="reference_weights"
-              value={form.reference_weights}
-              placeholder="e.g. OIML class F2 weight set, certificate WS-4471"
-              onChange={(e) => setField('reference_weights', e.target.value)}
-            />
+            {picking ? (
+              <>
+                <Select
+                  id="reference_weights"
+                  value={form.weight_set_id || (typingWeights ? OTHER_OPTION : '')}
+                  onChange={(e) => pickWeights(e.target.value)}
+                >
+                  <option value="">Choose a weight set…</option>
+                  {weightSets.map((s) => {
+                    const overdue = isOverdueOn(s.next_check, testDay);
+                    return (
+                      <option key={s.id} value={s.id} disabled={overdue && s.id !== form.weight_set_id}>
+                        {weightSetSummary(s)}
+                        {overdue ? ' — overdue for its check' : ''}
+                      </option>
+                    );
+                  })}
+                  <option value={OTHER_OPTION}>Other (type it in)</option>
+                </Select>
+                {typingWeights && (
+                  <Input
+                    aria-label="Reference weights used"
+                    className="mt-2"
+                    value={form.reference_weights}
+                    placeholder="e.g. OIML class F2 weight set, certificate WS-4471"
+                    onChange={(e) => setField('reference_weights', e.target.value)}
+                  />
+                )}
+                {pickedSet && pickedStatus?.state === 'overdue' && (
+                  <p role="alert" className="mt-2 flex items-start gap-2 rounded-lg bg-red-soft px-3 py-2 text-[12.5px] text-red">
+                    <AlertCircle size={15} className="mt-0.5 shrink-0" />
+                    {pickedSet.code} was due for its check on {formatDate(pickedSet.next_check)}. Choose another set, or ask a
+                    reviewer to enter its new check date.
+                  </p>
+                )}
+                {pickedSet && pickedStatus?.state === 'due_soon' && (
+                  <p className="mt-2 flex items-start gap-2 rounded-lg bg-amber-soft px-3 py-2 text-[12.5px] text-amber-ink">
+                    <CalendarClock size={15} className="mt-0.5 shrink-0" />
+                    {pickedSet.code} is due for its check on {formatDate(pickedSet.next_check)}.
+                  </p>
+                )}
+              </>
+            ) : (
+              <Input
+                id="reference_weights"
+                value={form.reference_weights}
+                placeholder="e.g. OIML class F2 weight set, certificate WS-4471"
+                onChange={(e) => setField('reference_weights', e.target.value)}
+              />
+            )}
           </Field>
           <Field label="Remarks (optional)" htmlFor="remarks" className="md:col-span-2">
             <Textarea id="remarks" value={form.remarks} onChange={(e) => setField('remarks', e.target.value)} />

@@ -5,7 +5,7 @@ import { formatDate } from '@/lib/format';
 import type { ReportListItem, ReportStatus } from '@/lib/types';
 
 const BAR: Record<ReportStatus, string> = {
-  draft: 'bg-line-strong',
+  draft: 'bg-blue',
   pending: 'bg-amber',
   approved: 'bg-green',
   failed: 'bg-red',

@@ -41,6 +41,13 @@ describe('submitProblems', () => {
     expect(submitProblems({ ...complete, temperature_source: 'manual', humidity_source: null }, [goodReading])).toEqual([]);
   });
 
+  it('blocks a weight set that is overdue', () => {
+    expect(submitProblems({ ...complete, weight_set_overdue: true }, [goodReading])).toEqual([
+      "Choose a weight set that isn't overdue",
+    ]);
+    expect(submitProblems({ ...complete, weight_set_overdue: false }, [goodReading])).toEqual([]);
+  });
+
   it('keeps problems in a stable order', () => {
     const problems = submitProblems({ ...complete, model: '', temperature_source: 'weather' }, []);
     expect(problems).toEqual(['Fill in: Model', 'Add at least one reading', 'Confirm weather values']);

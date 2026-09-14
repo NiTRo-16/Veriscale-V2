@@ -4,11 +4,14 @@
 import type {
   AccuracyClass,
   ConditionSource,
+  Decision,
   LiveResult,
   PhotoKind,
   ReportStatus,
   Role,
   TestStage,
+  WeightClass,
+  WeightState,
 } from './types';
 
 export const STATUS_LABEL: Record<ReportStatus, string> = {
@@ -22,6 +25,12 @@ export const RESULT_LABEL: Record<LiveResult, string> = {
   pass: 'Pass',
   fail: 'Fail',
   incomplete: 'Incomplete',
+};
+
+export const DECISION_LABEL: Record<Decision, string> = {
+  approved: 'Approved',
+  failed: 'Failed',
+  sent_back: 'Sent back',
 };
 
 export const SOURCE_LABEL: Record<ConditionSource, string> = {
@@ -64,5 +73,21 @@ export const ACCURACY_CLASS_OPTIONS: ReadonlyArray<{ value: AccuracyClass; label
   { value: 'IIII', label: 'IIII — Ordinary' },
 ];
 
-export const INDICATOR_TYPES = ['Digital', 'Analog', 'Hybrid'] as const;
+/** What a reviewer checks by eye before deciding. Stored on the report by key. */
+export const REVIEW_CHECKS: ReadonlyArray<{ key: string; label: string }> = [
+  { key: 'nameplate', label: 'Nameplate photo matches the model and serial number' },
+  { key: 'display', label: 'Display photo matches the readings' },
+  { key: 'seals', label: 'Seals are in place in the seals photo' },
+];
+
+export const INDICATOR_TYPES =['Digital', 'Analog', 'Hybrid'] as const;
 export const POWER_SOURCES = ['Mains AC', 'Battery', 'Mains + battery backup'] as const;
+
+/** Classes of reference weight sets, most accurate first. */
+export const WEIGHT_CLASSES: ReadonlyArray<WeightClass> = ['E1', 'E2', 'F1', 'F2', 'M1', 'M2', 'M3'];
+
+export const WEIGHT_STATE_LABEL: Record<WeightState, string> = {
+  in_date: 'In date',
+  due_soon: 'Due soon',
+  overdue: 'Overdue',
+};

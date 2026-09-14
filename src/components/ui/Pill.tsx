@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import { RESULT_LABEL, STATUS_LABEL } from '@/lib/labels';
-import type { LiveResult, ReportStatus } from '@/lib/types';
+import { DECISION_LABEL, RESULT_LABEL, SOURCE_LABEL, STATUS_LABEL } from '@/lib/labels';
+import type { ConditionSource, Decision, LiveResult, ReportStatus } from '@/lib/types';
 
 export type Tone = 'green' | 'amber' | 'red' | 'blue' | 'gray';
 
@@ -23,7 +23,7 @@ export function Pill({ tone = 'gray', children, className = '' }: { tone?: Tone;
 }
 
 export const STATUS_TONE: Record<ReportStatus, Tone> = {
-  draft: 'gray',
+  draft: 'blue',
   pending: 'amber',
   approved: 'green',
   failed: 'red',
@@ -31,6 +31,22 @@ export const STATUS_TONE: Record<ReportStatus, Tone> = {
 
 export function StatusPill({ status }: { status: ReportStatus }) {
   return <Pill tone={STATUS_TONE[status]}>{STATUS_LABEL[status]}</Pill>;
+}
+
+export const DECISION_TONE: Record<Decision, Tone> = {
+  approved: 'green',
+  failed: 'red',
+  sent_back: 'amber',
+};
+
+export function DecisionPill({ decision }: { decision: Decision }) {
+  return <Pill tone={DECISION_TONE[decision]}>{DECISION_LABEL[decision]}</Pill>;
+}
+
+export const SOURCE_TONE: Record<ConditionSource, Tone> = { sensor: 'green', manual: 'gray', weather: 'amber' };
+
+export function SourcePill({ source }: { source: ConditionSource }) {
+  return <Pill tone={SOURCE_TONE[source]}>{SOURCE_LABEL[source]}</Pill>;
 }
 
 export function ResultText({ result }: { result: LiveResult | null }) {

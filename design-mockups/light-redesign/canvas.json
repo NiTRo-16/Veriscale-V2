@@ -1,0 +1,13 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 1440, "h": 1140, "title": "Admin dashboard" },
+    { "file": "ReviewQueue.dc.html", "x": 1540, "y": 0, "w": 1440, "h": 1100, "title": "Review queue · reviewer" },
+    { "file": "ReviewDesk.dc.html", "x": 3080, "y": 0, "w": 1440, "h": 1500, "title": "Review desk · side-by-side check" },
+    { "file": "Manufacturers.dc.html", "x": 0, "y": 1700, "w": 1440, "h": 1000, "title": "Manufacturers" },
+    { "file": "ReferenceWeights.dc.html", "x": 1540, "y": 1700, "w": 1440, "h": 1200, "title": "Reference weights" }
+  ],
+  "annotations": [
+    { "id": "sample-data", "x": 0, "y": -200, "w": 520, "text": "Light redesign of VeriScale. All names, numbers and dates are sample data (today = 13 Sep 2026). New for reviewers: review queue with filters, side-by-side review desk with checks, send back for changes, and records for manufacturers and reference weights." }
+  ],
+  "launch": { "view": "canvas" }
+}

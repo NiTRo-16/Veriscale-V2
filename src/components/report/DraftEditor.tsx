@@ -1,15 +1,25 @@
 'use client';
 
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, CornerUpLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState, useTransition } from 'react';
 import { deleteDraft, saveDraftFields, saveReadings, submitReport } from '@/app/(app)/reports/actions';
 import { calculateReading, reportResult } from '@/lib/calc';
+import { formatDateTime } from '@/lib/format';
 import { submitProblems } from '@/lib/readiness';
+import { isDateOnly, isOverdueOn } from '@/lib/records';
 import type { AllowedErrorRule, FullReport } from '@/lib/types';
 import type { WeatherEstimate } from '@/lib/weather';
 import { ConditionsSection } from './ConditionsSection';
-import { readingsToDrafts, reportToForm, type DraftForm, type ReadingDraftRow, type SetField } from './draft-form';
+import {
+  readingsToDrafts,
+  reportToForm,
+  type DraftForm,
+  type DraftRecords,
+  type PatchForm,
+  type ReadingDraftRow,
+  type SetField,
+} from './draft-form';
 import { InstrumentSection } from './InstrumentSection';
 import { PhotosSection } from './PhotosSection';
 import { ReadingsTable } from './ReadingsTable';
@@ -26,10 +36,15 @@ export function DraftEditor({
   initial,
   rules,
   photos,
+  records,
+  today,
 }: {
   initial: FullReport;
   rules: AllowedErrorRule[];
   photos: PhotoWithUrl[];
+  records: DraftRecords;
+  /** Today's date in the lab (YYYY-MM-DD), used when the test date is blank. */
+  today: string;
 }) {
   const router = useRouter();
   const reportId = initial.report.id;
@@ -49,6 +64,7 @@ export function DraftEditor({
   const readingsSave = useAutosave(readings, saveRows);
 
   const setField: SetField = useCallback((key, value) => setForm((f) => ({ ...f, [key]: value })), []);
+  const patchForm: PatchForm = useCallback((patch) => setForm((f) => ({ ...f, ...patch })), []);
 
   // Typing a temperature or humidity makes it a typed-in value and clears any weather confirmation.
   const setCondition = useCallback((key: 'temperature_c' | 'humidity_pct', value: string) => {
@@ -93,7 +109,15 @@ export function DraftEditor({
     [readings, form.accuracy_class, form.interval_e_g, form.test_stage, rules],
   );
 
-  const problems = submitProblems({ ...form, accuracy_class: form.accuracy_class || null }, readings);
+  const pickedWeightSet = records.weightSets.find((s) => s.id === form.weight_set_id);
+  const problems = submitProblems(
+    {
+      ...form,
+      accuracy_class: form.accuracy_class || null,
+      weight_set_overdue: isOverdueOn(pickedWeightSet?.next_check, isDateOnly(form.test_date) ? form.test_date : today),
+    },
+    readings,
+  );
   const saveStatus = STATUS_ORDER.find((s) => s === fieldsSave.status || s === readingsSave.status) ?? 'saved';
   const saveError = fieldsSave.error ?? readingsSave.error;
 
@@ -123,12 +147,36 @@ export function DraftEditor({
     });
   };
 
+  const { sent_back_at: sentBackAt, sent_back_by: sentBackBy, send_back_note: sendBackNote } = initial.report;
+
   return (
     <div className="flex flex-col gap-4">
-      <InstrumentSection form={form} setField={setField} />
+      {sentBackAt && (
+        <div role="status" className="flex items-start gap-3 rounded-card border border-amber/40 bg-amber-soft px-4 py-3">
+          <CornerUpLeft size={16} className="mt-0.5 shrink-0 text-amber-ink" />
+          <div className="min-w-0 text-[13px]">
+            <div className="font-semibold text-amber-ink">
+              Sent back for changes by {(sentBackBy && initial.people[sentBackBy]) || 'a reviewer'} ·{' '}
+              <span className="font-normal">{formatDateTime(sentBackAt)}</span>
+            </div>
+            {sendBackNote && <p className="mt-1 whitespace-pre-line text-ink">“{sendBackNote}”</p>}
+            <p className="mt-1 text-[12px] text-ink-soft">Make the changes, then send the report for review again.</p>
+          </div>
+        </div>
+      )}
+      <InstrumentSection
+        form={form}
+        setField={setField}
+        patchForm={patchForm}
+        manufacturers={records.manufacturers}
+        models={records.models}
+      />
       <ConditionsSection
         form={form}
         setField={setField}
+        patchForm={patchForm}
+        weightSets={records.weightSets}
+        today={today}
         setCondition={setCondition}
         actions={
           <>

@@ -13,6 +13,8 @@ export interface DraftForReadiness {
   temperature_source: ConditionSource | null;
   humidity_source: ConditionSource | null;
   weather_confirmed: boolean;
+  /** True when the picked weight set is past its check date on the test date. */
+  weight_set_overdue?: boolean;
 }
 
 const REQUIRED_TEXT: ReadonlyArray<[keyof DraftForReadiness, string]> = [
@@ -54,6 +56,7 @@ export function submitProblems(report: DraftForReadiness, readings: readonly Rea
 
   const usesWeather = report.temperature_source === 'weather' || report.humidity_source === 'weather';
   if (usesWeather && !report.weather_confirmed) problems.push('Confirm weather values');
+  if (report.weight_set_overdue) problems.push("Choose a weight set that isn't overdue");
 
   return problems;
 }
