@@ -1,26 +1,149 @@
 'use client';
 
 import { AlertTriangle } from 'lucide-react';
+import { useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Field, Input, Select } from '@/components/ui/Field';
 import { table3Hint } from '@/lib/calc';
 import { fieldProblem } from '@/lib/draft-fields';
+import { formatAmount } from '@/lib/format';
 import { ACCURACY_CLASS_OPTIONS, INDICATOR_TYPES, POWER_SOURCES, TEST_STAGE_LABEL } from '@/lib/labels';
-import type { TestStage } from '@/lib/types';
-import type { DraftForm, SetField } from './draft-form';
+import type { InstrumentModel, Manufacturer, TestStage } from '@/lib/types';
+import { OTHER_OPTION, type DraftForm, type PatchForm, type SetField } from './draft-form';
 import { UnitInput } from './UnitInput';
 
-export function InstrumentSection({ form, setField }: { form: DraftForm; setField: SetField }) {
+export function InstrumentSection({
+  form,
+  setField,
+  patchForm,
+  manufacturers,
+  models,
+}: {
+  form: DraftForm;
+  setField: SetField;
+  patchForm: PatchForm;
+  manufacturers: Manufacturer[];
+  models: InstrumentModel[];
+}) {
   const hint = table3Hint(form.accuracy_class || null, form.max_capacity_kg, form.interval_e_g);
+
+  // With no manufacturers listed yet, both fields stay plain text boxes.
+  const picking = manufacturers.length > 0;
+  const [typingMaker, setTypingMaker] = useState(() => !form.manufacturer_id && form.manufacturer.trim() !== '');
+  const [typingModel, setTypingModel] = useState(() => !form.model_id && form.model.trim() !== '');
+  const makerModels = models.filter((m) => m.manufacturer_id === form.manufacturer_id);
+  const pickedModel = models.find((m) => m.id === form.model_id) ?? null;
+
+  const pickMaker = (value: string) => {
+    if (value === OTHER_OPTION) {
+      setTypingMaker(true);
+      setTypingModel(true);
+      patchForm({ manufacturer_id: '', model_id: '' });
+      return;
+    }
+    setTypingMaker(false);
+    const maker = manufacturers.find((m) => m.id === value) ?? null;
+    const keepModel = maker !== null && pickedModel?.manufacturer_id === maker.id;
+    if (!keepModel) setTypingModel(false);
+    patchForm({
+      manufacturer_id: maker?.id ?? '',
+      manufacturer: maker?.name ?? '',
+      ...(keepModel ? {} : { model_id: '', model: '' }),
+    });
+  };
+
+  // Picking a model fills in its class, capacity and interval.
+  const pickModel = (value: string) => {
+    if (value === OTHER_OPTION) {
+      setTypingModel(true);
+      patchForm({ model_id: '' });
+      return;
+    }
+    setTypingModel(false);
+    const model = makerModels.find((m) => m.id === value);
+    if (!model) {
+      patchForm({ model_id: '', model: '' });
+      return;
+    }
+    patchForm({
+      model_id: model.id,
+      model: model.name,
+      accuracy_class: model.accuracy_class,
+      max_capacity_kg: String(model.max_capacity_kg),
+      interval_e_g: String(model.interval_e_g),
+    });
+  };
+
+  const modelTextDisabled = picking && !typingMaker && !form.manufacturer_id && form.model === '';
 
   return (
     <Card title="Instrument details" subtitle="The weighing instrument being tested.">
       <div className="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2">
         <Field label="Manufacturer" htmlFor="manufacturer">
-          <Input id="manufacturer" value={form.manufacturer} onChange={(e) => setField('manufacturer', e.target.value)} />
+          {picking ? (
+            <>
+              <Select
+                id="manufacturer"
+                value={form.manufacturer_id || (typingMaker ? OTHER_OPTION : '')}
+                onChange={(e) => pickMaker(e.target.value)}
+              >
+                <option value="">Choose a manufacturer…</option>
+                {manufacturers.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.name}
+                  </option>
+                ))}
+                <option value={OTHER_OPTION}>Other (type it in)</option>
+              </Select>
+              {typingMaker && (
+                <Input
+                  aria-label="Manufacturer name"
+                  className="mt-2"
+                  placeholder="Type the manufacturer's name"
+                  value={form.manufacturer}
+                  onChange={(e) => setField('manufacturer', e.target.value)}
+                />
+              )}
+            </>
+          ) : (
+            <Input id="manufacturer" value={form.manufacturer} onChange={(e) => setField('manufacturer', e.target.value)} />
+          )}
         </Field>
-        <Field label="Model" htmlFor="model">
-          <Input id="model" value={form.model} onChange={(e) => setField('model', e.target.value)} />
+        <Field
+          label="Model"
+          htmlFor="model"
+          hint={pickedModel ? 'Class, capacity and interval were filled in from this model.' : undefined}
+        >
+          {picking && form.manufacturer_id ? (
+            <>
+              <Select id="model" value={form.model_id || (typingModel ? OTHER_OPTION : '')} onChange={(e) => pickModel(e.target.value)}>
+                <option value="">{makerModels.length > 0 ? 'Choose a model…' : 'No models listed for this manufacturer'}</option>
+                {makerModels.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.name} · class {m.accuracy_class} · {formatAmount(m.max_capacity_kg, 'kg')}
+                  </option>
+                ))}
+                <option value={OTHER_OPTION}>Other (type it in)</option>
+              </Select>
+              {typingModel && (
+                <Input
+                  aria-label="Model name"
+                  className="mt-2"
+                  placeholder="Type the model name"
+                  value={form.model}
+                  onChange={(e) => setField('model', e.target.value)}
+                />
+              )}
+            </>
+          ) : (
+            <Input
+              id="model"
+              value={form.model}
+              disabled={modelTextDisabled}
+              placeholder={modelTextDisabled ? 'Choose a manufacturer first' : undefined}
+              onChange={(e) => setField('model', e.target.value)}
+            />
+          )}
         </Field>
         <Field label="Serial number" htmlFor="serial_number">
           <Input

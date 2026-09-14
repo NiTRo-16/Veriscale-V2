@@ -6,6 +6,9 @@ import {
   formatDateTime,
   formatGrams,
   formatKg,
+  formatAmount,
+  formatMonth,
+  formatPlural,
   initials,
   safeNextPath,
 } from '@/lib/format';
@@ -18,6 +21,11 @@ describe('dates', () => {
   it('formats timestamps in the given time zone', () => {
     expect(formatDateTime('2026-09-11T16:05:00Z', 'UTC')).toBe('11 Sep 2026, 16:05');
     expect(formatDateTime('2026-09-11T20:05:00Z', 'Asia/Kolkata')).toBe('12 Sep 2026, 01:35');
+  });
+
+  it('formats a month', () => {
+    expect(formatMonth('2026-09-01', 'America/Los_Angeles')).toBe('Sep 2026');
+    expect(formatMonth(null)).toBe('—');
   });
 
   it('uses a dash for missing or invalid dates', () => {
@@ -42,6 +50,25 @@ describe('numbers', () => {
     expect(formatKg(10.02)).toBe('10.020');
     expect(formatKg(undefined)).toBe('—');
     expect(formatCount(2000)).toBe('2,000');
+  });
+});
+
+describe('formatAmount', () => {
+  it('keeps small decimals and groups thousands', () => {
+    expect(formatAmount(0.22, 'kg')).toBe('0.22 kg');
+    expect(formatAmount(1500, 'kg')).toBe('1,500 kg');
+    expect(formatAmount(0.00005, 'g')).toBe('0.0001 g');
+    expect(formatAmount(null, 'kg')).toBe('—');
+    expect(formatAmount(Number.NaN, 'kg')).toBe('—');
+  });
+});
+
+describe('formatPlural', () => {
+  it('uses the singular only for one', () => {
+    expect(formatPlural(1, 'model')).toBe('1 model');
+    expect(formatPlural(0, 'model')).toBe('0 models');
+    expect(formatPlural(2000, 'test')).toBe('2,000 tests');
+    expect(formatPlural(2, 'weight set')).toBe('2 weight sets');
   });
 });
 

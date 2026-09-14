@@ -1,6 +1,15 @@
 // Editor state for a draft: every input is kept as the text the user typed,
 // so half-typed numbers like "10." survive until they are valid.
-import type { AccuracyClass, ConditionSource, ReadingRow, ReportRow, TestStage } from '@/lib/types';
+import type {
+  AccuracyClass,
+  ConditionSource,
+  InstrumentModel,
+  Manufacturer,
+  ReadingRow,
+  ReportRow,
+  TestStage,
+  WeightSet,
+} from '@/lib/types';
 
 export interface DraftForm {
   manufacturer: string;
@@ -21,6 +30,10 @@ export interface DraftForm {
   weather_confirmed: boolean;
   reference_weights: string;
   remarks: string;
+  /** Picked records; '' when typed in by hand. */
+  manufacturer_id: string;
+  model_id: string;
+  weight_set_id: string;
 }
 
 export interface ReadingDraftRow {
@@ -33,6 +46,17 @@ export interface ReadingDraftRow {
 }
 
 export type SetField = <K extends keyof DraftForm>(key: K, value: DraftForm[K]) => void;
+export type PatchForm = (patch: Partial<DraftForm>) => void;
+
+/** Records a technician can pick from while filling in a draft. */
+export interface DraftRecords {
+  manufacturers: Manufacturer[];
+  models: InstrumentModel[];
+  weightSets: WeightSet[];
+}
+
+/** Select value for "Other (type it in)". */
+export const OTHER_OPTION = '__other__';
 
 const text = (v: string | number | null | undefined) => (v === null || v === undefined ? '' : String(v));
 
@@ -56,6 +80,9 @@ export function reportToForm(r: ReportRow): DraftForm {
     weather_confirmed: r.weather_confirmed,
     reference_weights: text(r.reference_weights),
     remarks: text(r.remarks),
+    manufacturer_id: text(r.manufacturer_id),
+    model_id: text(r.model_id),
+    weight_set_id: text(r.weight_set_id),
   };
 }
 

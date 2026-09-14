@@ -1,0 +1,290 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap">
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Inter','IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;color:#15171C;background:#F6F7F8;-webkit-font-smoothing:antialiased}
+    a{color:#177A43;text-decoration:none} a:hover{color:#11643A}
+    .mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+    .muted{color:#6B7079}
+    .ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+    .side{width:248px;flex-shrink:0;background:#FBFBFB;border-right:1px solid #ECEEF0;display:flex;flex-direction:column;padding:16px 12px}
+    .org{display:flex;align-items:center;gap:10px;padding:4px 6px 12px}
+    .logo{width:38px;height:38px;border-radius:10px;background:#111317;color:#fff;display:grid;place-items:center;flex-shrink:0}
+    .org-n{font-size:14px;font-weight:600;line-height:1.2}
+    .org-s{font-size:11px;color:#6B7079}
+    .nav-sec{margin-top:14px;padding:0 10px 6px;font-size:11px;font-weight:500;color:#9AA0A8}
+    .ni{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:8px;font-size:13.5px;color:#3D424A}
+    .ni .ic{color:#6B7079}
+    .ni.on{background:#EEF0F2;color:#15171C;font-weight:600}
+    .ni.on .ic{color:#15171C}
+    .cnt{margin-left:auto;font-size:12px;font-weight:500;color:#9AA0A8}
+    .badge{margin-left:auto;min-width:24px;height:22px;padding:0 7px;border-radius:999px;background:#D94F24;color:#fff;font-size:11px;font-weight:600;display:grid;place-items:center}
+    .me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #ECEEF0;border-radius:12px;background:#fff}
+    .av{width:34px;height:34px;border-radius:999px;background:#E6F5EC;color:#177A43;font-size:12px;font-weight:600;display:grid;place-items:center;flex-shrink:0}
+    .main{flex:1;display:flex;flex-direction:column;min-width:0}
+    .top{height:64px;display:flex;align-items:center;gap:12px;padding:0 24px;background:#fff;border-bottom:1px solid #ECEEF0}
+    .title{font-size:18px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+    .title span{margin-left:8px;font-size:13px;font-weight:400;color:#6B7079}
+    .search{width:380px;margin-left:auto;display:flex;align-items:center;gap:8px;height:38px;padding:0 8px 0 14px;border-radius:999px;border:1px solid #E3E6EA;background:#F6F7F8;font-size:13px;color:#9AA0A8}
+    .kbd{margin-left:auto;height:22px;padding:0 7px;border-radius:999px;border:1px solid #E3E6EA;background:#fff;font-size:11px;color:#6B7079;display:grid;place-items:center}
+    .iconbtn{position:relative;width:38px;height:38px;border-radius:999px;border:1px solid #E3E6EA;background:#fff;display:grid;place-items:center;color:#3D424A;flex-shrink:0}
+    .dot{position:absolute;top:8px;right:9px;width:8px;height:8px;border-radius:999px;background:#D94F24;border:1.5px solid #fff}
+    .btn-black{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:999px;background:#111317;color:#fff;font-size:13px;font-weight:500;white-space:nowrap}
+    .btn-green{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 14px;border-radius:8px;background:#1F9D55;color:#fff;font-size:12.5px;font-weight:600;white-space:nowrap}
+    .ghost{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:8px;border:1px solid #E3E6EA;background:#fff;font-size:12.5px;font-weight:500;color:#15171C;white-space:nowrap}
+    .content{padding:24px;display:flex;flex-direction:column;gap:16px}
+    .card{background:#fff;border:1px solid #E8EAED;border-radius:14px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+    .kpi{padding:18px 20px;display:flex;align-items:flex-start;justify-content:space-between}
+    .kpi-l{font-size:13px;color:#6B7079}
+    .kpi-v{margin-top:12px;font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1}
+    .kpi-s{margin-top:8px;font-size:12px;color:#6B7079}
+    .kpi-i{width:42px;height:42px;border-radius:10px;border:1px solid #E8EAED;display:grid;place-items:center;color:#6B7079}
+    .ch{margin:0;font-size:14px;font-weight:600}
+    .pill{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 10px;border-radius:999px;font-size:11.5px;font-weight:500;white-space:nowrap}
+    .p-green{background:#E6F5EC;color:#177A43}
+    .p-amber{background:#FDF3DC;color:#8F6310}
+    .p-blue{background:#E8F0FC;color:#2459B8}
+    .p-red{background:#FCEBEA;color:#B3261E}
+    .p-gray{background:#EEF0F2;color:#3D424A}
+    .tabs{display:flex;align-items:center;gap:4px;padding:3px;border-radius:10px;background:#F1F2F4}
+    .tab{display:flex;align-items:center;gap:7px;height:30px;padding:0 12px;border-radius:8px;font-size:12.5px;font-weight:500;color:#6B7079}
+    .tab.on{background:#fff;color:#15171C;box-shadow:0 1px 2px rgba(16,24,40,.08)}
+    .tab b{font-weight:600;font-size:11.5px;color:#9AA0A8}
+    .tab.on b{color:#177A43}
+    .tbl{width:100%;border-collapse:collapse;font-size:13px}
+    .tbl th{height:42px;padding:0 16px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7079;background:#FAFBFB;border-top:1px solid #ECEEF0;border-bottom:1px solid #ECEEF0;white-space:nowrap}
+    .tbl td{height:62px;padding:0 16px;border-bottom:1px solid #F0F1F3;white-space:nowrap}
+    .tbl tr:last-child td{border-bottom:0}
+    .r{text-align:right}
+    .strong{font-weight:600}
+    .sub{margin-top:2px;font-size:12px;color:#6B7079}
+    .v-pass{color:#177A43;font-weight:600}
+    .v-fail{color:#B3261E;font-weight:600}
+    .avs{width:28px;height:28px;border-radius:999px;background:#E6F5EC;color:#177A43;font-size:11px;font-weight:600;display:grid;place-items:center;flex-shrink:0}
+  </style>
+</helmet>
+<div style="display:flex;width:1440px;min-height:1100px;background:#F6F7F8">
+  <aside class="side">
+    <div class="org">
+      <div class="logo"><svg class="ic" viewBox="0 0 24 24" style="width:20px;height:20px"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="M7 21h10"></path><path d="M12 3v18"></path><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"></path></svg></div>
+      <div><div class="org-n">VeriScale</div><div class="org-s">NAWI test reports</div></div>
+    </div>
+    <div class="nav-sec" style="margin-top:4px">Overview</div>
+    <div class="ni"><svg class="ic" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>Dashboard</div>
+    <div class="ni"><svg class="ic" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>Test reports<span class="cnt">138</span></div>
+    <div class="nav-sec">Review desk</div>
+    <div class="ni on"><svg class="ic" viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"></path></svg>Review queue<span class="badge">25</span></div>
+    <div class="ni"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>My decisions</div>
+    <div class="ni"><svg class="ic" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M12 18v-6"></path><path d="m9 15 3 3 3-3"></path></svg>Certificates</div>
+    <div class="nav-sec">Records</div>
+    <div class="ni"><svg class="ic" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M17 18h1"></path><path d="M12 18h1"></path><path d="M7 18h1"></path></svg>Manufacturers</div>
+    <div class="ni"><svg class="ic" viewBox="0 0 24 24"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="M7 21h10"></path><path d="M12 3v18"></path><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"></path></svg>Instrument models</div>
+    <div class="ni"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"></circle><path d="M6.5 8a2 2 0 0 0-1.905 1.46L2.1 18.5A2 2 0 0 0 4 21h16a2 2 0 0 0 1.925-2.54L19.4 9.5A2 2 0 0 0 17.48 8Z"></path></svg>Reference weights<span class="pill p-amber" style="margin-left:auto;height:20px;padding:0 7px;font-size:11px">2 due</span></div>
+    <div class="me">
+      <div class="av">KR</div>
+      <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">Kavya Rao</div><div class="muted" style="font-size:11.5px">Reviewer</div></div>
+      <svg class="ic muted" viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line></svg>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <div class="title">Review queue<span>Reports waiting for your decision</span></div>
+      <div class="search"><svg class="ic" viewBox="0 0 24 24" style="width:16px;height:16px"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>Search report no, serial, manufacturer…<span class="kbd">Ctrl K</span></div>
+      <div class="iconbtn"><svg class="ic" viewBox="0 0 24 24" style="width:17px;height:17px"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg><span class="dot"></span></div>
+      <div class="iconbtn"><svg class="ic" viewBox="0 0 24 24" style="width:17px;height:17px"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg></div>
+      <div class="btn-black"><svg class="ic" viewBox="0 0 24 24" style="width:15px;height:15px"><path d="M12 20h9"></path><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"></path></svg>Start next review</div>
+    </header>
+
+    <div class="content">
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px">
+        <div class="card kpi">
+          <div><div class="kpi-l">Waiting for review</div><div class="kpi-v">25</div><div class="kpi-s">2 submitted today</div></div>
+          <div class="kpi-i"><svg class="ic" viewBox="0 0 24 24" style="width:20px;height:20px"><path d="M12 20h9"></path><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"></path></svg></div>
+        </div>
+        <div class="card kpi">
+          <div><div class="kpi-l">Oldest waiting</div><div class="kpi-v">3 days</div><div class="kpi-s"><span class="mono">VS-2026-021</span> · TW-150</div></div>
+          <div class="kpi-i"><svg class="ic" viewBox="0 0 24 24" style="width:20px;height:20px"><path d="M5 22h14"></path><path d="M5 2h14"></path><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"></path></svg></div>
+        </div>
+        <div class="card kpi">
+          <div><div class="kpi-l">Reviewed by you this week</div><div class="kpi-v">14</div><div class="kpi-s"><span class="pill p-green" style="height:20px;padding:0 8px;font-size:11px">+4 vs last week</span></div></div>
+          <div class="kpi-i"><svg class="ic" viewBox="0 0 24 24" style="width:20px;height:20px"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></div>
+        </div>
+        <div class="card kpi">
+          <div><div class="kpi-l">Sent back for changes</div><div class="kpi-v">3</div><div class="kpi-s">Waiting on technicians</div></div>
+          <div class="kpi-i"><svg class="ic" viewBox="0 0 24 24" style="width:20px;height:20px"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></div>
+        </div>
+      </div>
+
+      <section class="card" style="overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px">
+          <div class="tabs">
+            <div class="tab on">Waiting<b>25</b></div>
+            <div class="tab">Sent back<b>3</b></div>
+            <div class="tab">Decided by me<b>41</b></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="ghost"><svg class="ic" viewBox="0 0 24 24" style="width:14px;height:14px"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>All classes<svg class="ic" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="m6 9 6 6 6-6"></path></svg></div>
+            <div class="ghost">All technicians<svg class="ic" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="m6 9 6 6 6-6"></path></svg></div>
+            <div class="ghost">Result: any<svg class="ic" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="m6 9 6 6 6-6"></path></svg></div>
+            <div class="ghost">Oldest first<svg class="ic" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="m6 9 6 6 6-6"></path></svg></div>
+          </div>
+        </div>
+        <table class="tbl">
+          <thead>
+            <tr><th>Report</th><th>Instrument</th><th>Class</th><th>Calculated result</th><th>Evidence</th><th>Tested by</th><th>Waiting</th><th class="r"></th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="mono strong">VS-2026-021</div><div class="sub">Initial verification</div></td>
+              <td><div class="strong">TW-150 Platform Scale</div><div class="sub">Acme Weighing Systems · <span class="mono">AWS-TW150-004417</span></div></td>
+              <td>Class III</td>
+              <td><div class="v-pass">Pass</div><div class="sub">5 of 5 readings inside limit</div></td>
+              <td><div style="display:flex;gap:6px"><span class="pill p-gray">4 photos</span><span class="pill p-green">Sensor</span></div></td>
+              <td><div style="display:flex;align-items:center;gap:8px"><span class="avs">AM</span>Arjun Mehta</div></td>
+              <td><span class="pill p-amber">3 days</span></td>
+              <td class="r"><span class="btn-green">Review</span></td>
+            </tr>
+            <tr>
+              <td><div class="mono strong">VS-2026-023</div><div class="sub">In-service inspection</div></td>
+              <td><div class="strong">EC-30 Counter Scale</div><div class="sub">Meridian Instruments · <span class="mono">MI-EC30-11820</span></div></td>
+              <td>Class III</td>
+              <td><div class="v-fail">Fail</div><div class="sub">1 of 6 readings over limit</div></td>
+              <td><div style="display:flex;gap:6px"><span class="pill p-gray">3 photos</span><span class="pill p-green">Sensor</span></div></td>
+              <td><div style="display:flex;align-items:center;gap:8px"><span class="avs">NK</span>Neha Kulkarni</div></td>
+              <td><span class="pill p-amber">2 days</span></td>
+              <td class="r"><span class="btn-green">Review</span></td>
+            </tr>
+            <tr>
+              <td><div class="mono strong">VS-2026-024</div><div class="sub">Initial verification</div></td>
+              <td><div class="strong">LX-220 Analytical Balance</div><div class="sub">Kestrel Labware · <span class="mono">KL-220-0931</span></div></td>
+              <td>Class I</td>
+              <td><div class="v-pass">Pass</div><div class="sub">8 of 8 readings inside limit</div></td>
+              <td><div style="display:flex;gap:6px"><span class="pill p-gray">5 photos</span><span class="pill p-green">Sensor</span></div></td>
+              <td><div style="display:flex;align-items:center;gap:8px"><span class="avs">AM</span>Arjun Mehta</div></td>
+              <td><span class="pill p-gray">1 day</span></td>
+              <td class="r"><span class="btn-green">Review</span></td>
+            </tr>
+            <tr>
+              <td><div class="mono strong">VS-2026-025</div><div class="sub">In-service inspection</div></td>
+              <td><div class="strong">HX-5000 Weighbridge Indicator</div><div class="sub">Northline Scales · <span class="mono">NS-HX5-2207</span></div></td>
+              <td>Class IIII</td>
+              <td><div class="v-pass">Pass</div><div class="sub">4 of 4 readings inside limit</div></td>
+              <td><div style="display:flex;gap:6px"><span class="pill p-gray">2 photos</span><span class="pill p-amber">Weather</span></div></td>
+              <td><div style="display:flex;align-items:center;gap:8px"><span class="avs">RD</span>Rohan Das</div></td>
+              <td><span class="pill p-gray">1 day</span></td>
+              <td class="r"><span class="btn-green">Review</span></td>
+            </tr>
+            <tr>
+              <td><div class="mono strong">VS-2026-026</div><div class="sub">Initial verification</div></td>
+              <td><div class="strong">PB-600 Platform Scale</div><div class="sub">Acme Weighing Systems · <span class="mono">AWS-PB600-000912</span></div></td>
+              <td>Class III</td>
+              <td><div class="v-pass">Pass</div><div class="sub">6 of 6 readings inside limit</div></td>
+              <td><div style="display:flex;gap:6px"><span class="pill p-gray">4 photos</span><span class="pill p-gray">Typed in</span></div></td>
+              <td><div style="display:flex;align-items:center;gap:8px"><span class="avs">NK</span>Neha Kulkarni</div></td>
+              <td><span class="pill p-gray">Today</span></td>
+              <td class="r"><span class="btn-green">Review</span></td>
+            </tr>
+            <tr>
+              <td><div class="mono strong">VS-2026-027</div><div class="sub">Initial verification</div></td>
+              <td><div class="strong">DS-15 Price Computing Scale</div><div class="sub">Meridian Instruments · <span class="mono">MI-DS15-40318</span></div></td>
+              <td>Class III</td>
+              <td><div class="v-pass">Pass</div><div class="sub">5 of 5 readings inside limit</div></td>
+              <td><div style="display:flex;gap:6px"><span class="pill p-gray">3 photos</span><span class="pill p-green">Sensor</span></div></td>
+              <td><div style="display:flex;align-items:center;gap:8px"><span class="avs">RD</span>Rohan Das</div></td>
+              <td><span class="pill p-gray">Today</span></td>
+              <td class="r"><span class="btn-green">Review</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid #ECEEF0">
+          <span class="muted" style="font-size:12.5px">Showing 6 of 25 reports</span>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div class="ghost">Previous</div>
+            <div class="ghost" style="background:#111317;border-color:#111317;color:#fff">1</div>
+            <div class="ghost">2</div>
+            <div class="ghost">3</div>
+            <div class="ghost">4</div>
+            <div class="ghost">5</div>
+            <div class="ghost">Next</div>
+          </div>
+        </div>
+      </section>
+
+      <div style="display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:16px">
+        <section class="card" style="padding:20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <h2 class="ch">Your recent decisions</h2>
+            <div class="ghost">View all<svg class="ic" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="m9 18 6-6-6-6"></path></svg></div>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #F0F1F3">
+              <span style="width:32px;height:32px;border-radius:999px;background:#E6F5EC;color:#177A43;display:grid;place-items:center;flex-shrink:0"><svg class="ic" viewBox="0 0 24 24" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></span>
+              <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600"><span class="mono">VS-2026-019</span> · HX-5000 Weighbridge Indicator</div><div class="sub">12 Sep, 16:05</div></div>
+              <span class="pill p-green">Approved</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #F0F1F3">
+              <span style="width:32px;height:32px;border-radius:999px;background:#FCEBEA;color:#B3261E;display:grid;place-items:center;flex-shrink:0"><svg class="ic" viewBox="0 0 24 24" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"></circle><path d="m15 9-6 6"></path><path d="m9 9 6 6"></path></svg></span>
+              <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600"><span class="mono">VS-2026-020</span> · SX-60 Bench Scale</div><div class="sub">12 Sep, 11:20 · “Eccentricity reading at corner 3 is over the allowed error.”</div></div>
+              <span class="pill p-red">Failed</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #F0F1F3">
+              <span style="width:32px;height:32px;border-radius:999px;background:#FDF3DC;color:#8F6310;display:grid;place-items:center;flex-shrink:0"><svg class="ic" viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></span>
+              <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600"><span class="mono">VS-2026-017</span> · EC-30 Counter Scale</div><div class="sub">11 Sep, 15:42 · “Seals photo is missing. Please add it and send again.”</div></div>
+              <span class="pill p-amber">Sent back</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:11px 0 0">
+              <span style="width:32px;height:32px;border-radius:999px;background:#E6F5EC;color:#177A43;display:grid;place-items:center;flex-shrink:0"><svg class="ic" viewBox="0 0 24 24" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></span>
+              <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600"><span class="mono">VS-2026-016</span> · TW-150 Platform Scale</div><div class="sub">11 Sep, 10:08</div></div>
+              <span class="pill p-green">Approved</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" style="padding:20px;display:flex;flex-direction:column;gap:16px">
+          <div>
+            <h2 class="ch">How long reports have waited</h2>
+            <div class="sub" style="font-size:12.5px;margin-top:4px">Target: a decision within 2 days</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px;margin-top:4px">
+            <div style="display:grid;grid-template-columns:64px minmax(0,1fr) 28px;align-items:center;gap:12px">
+              <span style="font-size:12.5px;color:#3D424A">Today</span>
+              <div style="height:14px"><div style="width:100%;height:14px;border-radius:0 4px 4px 0;background:#1F9D55"></div></div>
+              <span class="mono" style="font-size:13px;font-weight:600;text-align:right">9</span>
+            </div>
+            <div style="display:grid;grid-template-columns:64px minmax(0,1fr) 28px;align-items:center;gap:12px">
+              <span style="font-size:12.5px;color:#3D424A">1 day</span>
+              <div style="height:14px"><div style="width:88.9%;height:14px;border-radius:0 4px 4px 0;background:#1F9D55"></div></div>
+              <span class="mono" style="font-size:13px;font-weight:600;text-align:right">8</span>
+            </div>
+            <div style="display:grid;grid-template-columns:64px minmax(0,1fr) 28px;align-items:center;gap:12px">
+              <span style="font-size:12.5px;color:#3D424A">2 days</span>
+              <div style="height:14px"><div style="width:66.7%;height:14px;border-radius:0 4px 4px 0;background:#1F9D55"></div></div>
+              <span class="mono" style="font-size:13px;font-weight:600;text-align:right">6</span>
+            </div>
+            <div style="display:grid;grid-template-columns:64px minmax(0,1fr) 28px;align-items:center;gap:12px">
+              <span style="font-size:12.5px;color:#3D424A">3+ days</span>
+              <div style="height:14px"><div style="width:22.2%;height:14px;border-radius:0 4px 4px 0;background:#E0A030"></div></div>
+              <span class="mono" style="font-size:13px;font-weight:600;text-align:right">2</span>
+            </div>
+          </div>
+          <div style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:#FDF3DC;color:#8F6310;font-size:12.5px">
+            <svg class="ic" viewBox="0 0 24 24" style="width:16px;height:16px"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+            2 reports are past the 2-day target
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

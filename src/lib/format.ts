@@ -36,6 +36,14 @@ export function formatDate(value: DateLike, timeZone = TIME_ZONE): string {
   return `${p.day} ${MONTHS[p.month - 1]} ${p.year}`;
 }
 
+/** "Sep 2026" */
+export function formatMonth(value: DateLike, timeZone = TIME_ZONE): string {
+  const date = toDate(value);
+  if (!date) return DASH;
+  const p = partsOf(date, isDateOnly(value) ? 'UTC' : timeZone);
+  return `${MONTHS[p.month - 1]} ${p.year}`;
+}
+
 /** "11 Sep 2026, 16:05" */
 export function formatDateTime(value: DateLike, timeZone = TIME_ZONE): string {
   const date = toDate(value);
@@ -67,6 +75,17 @@ export function formatKg(value: number | null | undefined): string {
 /** Whole numbers with thousands separators: "2,000" */
 export function formatCount(value: number): string {
   return Math.round(value).toLocaleString('en-GB');
+}
+
+/** "1 model", "2,000 models" */
+export function formatPlural(value: number, singular: string, plural = `${singular}s`): string {
+  return `${formatCount(value)} ${Math.round(value) === 1 ? singular : plural}`;
+}
+
+/** 0.22 → "0.22 kg", 1500 → "1,500 kg" */
+export function formatAmount(value: number | null | undefined, unit: string): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return '—';
+  return `${value.toLocaleString('en-GB', { maximumFractionDigits: 4 })} ${unit}`;
 }
 
 /** "Kavya Rao" → "KR" */

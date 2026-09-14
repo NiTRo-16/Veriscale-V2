@@ -4,31 +4,34 @@ export interface DonutSegment {
   color: string;
 }
 
-const R = 110;
-const CX = 168;
-const CY = 140;
-const LENGTH = Math.PI * R;
-const GAP = 4;
+const R = 52;
+const CX = 70;
+const CY = 70;
+const STROKE = 16;
+const CIRCUMFERENCE = 2 * Math.PI * R;
+const GAP = 3;
 
-/** Half-donut for a part-to-whole at a glance, with a legend carrying the exact counts. */
-export function HalfDonut({ segments, totalLabel, title }: { segments: DonutSegment[]; totalLabel: string; title: string }) {
+/** Full-circle donut for a part-to-whole at a glance (report status mix), with a legend carrying the exact counts. */
+export function StatusDonut({ segments, totalLabel, title }: { segments: DonutSegment[]; totalLabel: string; title: string }) {
   const total = segments.reduce((sum, s) => sum + s.value, 0);
-  const arc = `M${CX - R} ${CY} A${R} ${R} 0 0 1 ${CX + R} ${CY}`;
   const visible = segments.filter((s) => s.value > 0);
 
   let offset = 0;
   const arcs = visible.map((s, i) => {
-    const length = (s.value / total) * LENGTH;
-    const dash = i < visible.length - 1 ? Math.max(0, length - GAP) : length;
+    const length = (s.value / total) * CIRCUMFERENCE;
+    const dash = visible.length > 1 ? Math.max(0, length - GAP) : length;
     const element = (
-      <path
+      <circle
         key={s.label}
-        d={arc}
+        cx={CX}
+        cy={CY}
+        r={R}
         fill="none"
         stroke={s.color}
-        strokeWidth="16"
-        strokeDasharray={`${dash.toFixed(2)} ${LENGTH + 20}`}
+        strokeWidth={STROKE}
+        strokeDasharray={`${dash.toFixed(2)} ${CIRCUMFERENCE - dash + 20}`}
         strokeDashoffset={(-offset).toFixed(2)}
+        transform={`rotate(-90 ${CX} ${CY})`}
       />
     );
     offset += length;
@@ -37,13 +40,17 @@ export function HalfDonut({ segments, totalLabel, title }: { segments: DonutSegm
 
   return (
     <figure className="m-0 flex flex-col gap-3">
-      <div className="relative mx-auto w-full max-w-[336px]">
-        <svg viewBox="0 0 336 160" className="h-auto w-full" role="img" aria-label={title}>
-          {total === 0 ? <path d={arc} fill="none" stroke="#eef0f2" strokeWidth="16" /> : arcs}
+      <div className="relative mx-auto h-[140px] w-[140px]">
+        <svg viewBox="0 0 140 140" className="h-full w-full" role="img" aria-label={title}>
+          {total === 0 ? (
+            <circle cx={CX} cy={CY} r={R} fill="none" stroke="#eef0f2" strokeWidth={STROKE} />
+          ) : (
+            arcs
+          )}
         </svg>
-        <div className="absolute inset-x-0 top-[52%] flex flex-col items-center">
-          <span className="text-[12px] text-muted">{totalLabel}</span>
-          <span className="mt-1 text-[28px] font-semibold leading-none tracking-tight text-ink">{total}</span>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-[22px] font-semibold leading-none tracking-tight text-ink">{total}</span>
+          <span className="mt-1 text-[11px] text-muted">{totalLabel}</span>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">

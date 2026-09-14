@@ -7,8 +7,10 @@ import { logActivity } from '@/lib/activity';
 import { calculateReading, reportResult } from '@/lib/calc';
 import { isUuid, sanitizeDraftFields, sanitizeReadings, type ReadingDraft } from '@/lib/draft-fields';
 import { loadReport, loadRules } from '@/lib/data';
+import { REVIEW_CHECKS } from '@/lib/labels';
 import { PHOTO_BUCKET, isPhotoKind, isPhotoPathFor } from '@/lib/photos';
 import { submitProblems } from '@/lib/readiness';
+import { isOverdueOn, todayDate } from '@/lib/records';
 import { createAdminSupabase } from '@/lib/supabase/admin';
 import { createServerSupabase } from '@/lib/supabase/server';
 import type { Profile } from '@/lib/types';
@@ -16,7 +18,19 @@ import type { Profile } from '@/lib/types';
 function refreshReportPages(reportId?: string) {
   revalidatePath('/dashboard');
   revalidatePath('/reports');
+  revalidatePath('/review');
+  revalidatePath('/review/decisions');
+  revalidatePath('/certificates');
   if (reportId) revalidatePath(`/reports/${reportId}`);
+}
+
+const cleanNote = (note: unknown) => (typeof note === 'string' && note.trim() ? note.trim().slice(0, 1000) : null);
+
+/** Keeps only the known check keys, as true/false. */
+function cleanChecks(checks: unknown): Record<string, boolean> | null {
+  if (!checks || typeof checks !== 'object') return null;
+  const source = checks as Record<string, unknown>;
+  return Object.fromEntries(REVIEW_CHECKS.map(({ key }) => [key, source[key] === true]));
 }
 
 /** Loads a report the actor is about to change and checks it is their own draft. */
@@ -117,7 +131,18 @@ export async function submitReport(reportId: string): Promise<ActionResult> {
     const full = await loadReport(sb, reportId);
     if (!full) throw new ActionError('This report could not be found.');
 
-    const problems = submitProblems(full.report, full.readings);
+    let weightSetOverdue = false;
+    if (full.report.weight_set_id) {
+      const { data: weightSet, error: weightSetError } = await sb
+        .from('weight_sets')
+        .select('next_check')
+        .eq('id', full.report.weight_set_id)
+        .maybeSingle();
+      if (weightSetError) throw weightSetError;
+      weightSetOverdue = isOverdueOn(weightSet?.next_check, full.report.test_date ?? todayDate());
+    }
+
+    const problems = submitProblems({ ...full.report, weight_set_overdue: weightSetOverdue }, full.readings);
     if (problems.length > 0) return fail(`Can't submit yet: ${problems.join(' · ')}`);
 
     const rules = await loadRules(sb);
@@ -157,6 +182,7 @@ export async function reviewReport(
   reportId: string,
   decision: 'approved' | 'failed',
   note: string,
+  checks?: Record<string, boolean>,
 ): Promise<ActionResult> {
   try {
     const actor = await getActor(['reviewer', 'admin']);
@@ -166,7 +192,26 @@ export async function reviewReport(
       p_report_id: reportId,
       p_actor: actor.id,
       p_decision: decision,
-      p_note: typeof note === 'string' && note.trim() ? note.trim().slice(0, 1000) : null,
+      p_note: cleanNote(note),
+      p_checks: cleanChecks(checks),
+    });
+    if (error) throw error;
+  } catch (err) {
+    refreshReportPages(reportId);
+    return toFailure(err);
+  }
+  refreshReportPages(reportId);
+  return ok(null);
+}
+
+export async function sendBackReport(reportId: string, note: string): Promise<ActionResult> {
+  try {
+    const actor = await getActor(['reviewer', 'admin']);
+    if (!isUuid(reportId)) throw new ActionError('This report could not be found.');
+    const { error } = await createAdminSupabase().rpc('send_back_report', {
+      p_report_id: reportId,
+      p_actor: actor.id,
+      p_note: cleanNote(note),
     });
     if (error) throw error;
   } catch (err) {

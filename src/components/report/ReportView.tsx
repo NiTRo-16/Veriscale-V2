@@ -78,6 +78,14 @@ export function ReportView({ full, rules, photos }: { full: FullReport; rules?: 
         </p>
       )}
 
+      {isDraft && report.sent_back_at && (
+        <p className="no-print rounded-lg bg-amber-soft px-3 py-2 text-[12.5px] text-amber-ink">
+          Sent back for changes by {(report.sent_back_by && people[report.sent_back_by]) || 'a reviewer'} on{' '}
+          {formatDateTime(report.sent_back_at)}
+          {text(report.send_back_note) && <span className="whitespace-pre-line">: “{report.send_back_note}”</span>}
+        </p>
+      )}
+
       <Section title="Instrument">
         <div className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-3">
           <Item label="Manufacturer">{text(report.manufacturer)}</Item>

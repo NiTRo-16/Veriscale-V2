@@ -180,6 +180,136 @@ describe('review_report', () => {
   });
 });
 
+describe('review_report checks', () => {
+  it('stores the reviewer checks with the decision', async () => {
+    const id = await submittedReport('pass');
+    await asService(db, (tx) =>
+      tx.query('select public.review_report($1, $2, $3, $4, $5::jsonb)', [
+        id,
+        reviewer,
+        'approved',
+        null,
+        JSON.stringify({ nameplate: true, display: true, seals: false }),
+      ]),
+    );
+    const row = (await db.query<{ review_checks: unknown }>('select review_checks from public.reports where id = $1', [id]))
+      .rows[0];
+    expect(row.review_checks).toEqual({ nameplate: true, display: true, seals: false });
+  });
+
+  it('rejects checks that are not an object', async () => {
+    const id = await submittedReport('pass');
+    expect(
+      await errorOf(
+        asService(db, (tx) =>
+          tx.query(`select public.review_report($1, $2, 'approved', null, '[true]'::jsonb)`, [id, reviewer]),
+        ),
+      ),
+    ).toMatch('BAD_VALUE');
+  });
+
+  it('checks cannot change after a decision', async () => {
+    const id = await submittedReport('pass');
+    await review(id, reviewer, 'approved');
+    expect(
+      await errorOf(db.query(`update public.reports set review_checks = '{"seals": true}' where id = $1`, [id])),
+    ).toMatch('REPORT_LOCKED');
+  });
+});
+
+describe('send_back_report', () => {
+  const sendBack = (reportId: string, actor: string, note: string | null) =>
+    asService(db, (tx) => tx.query('select public.send_back_report($1, $2, $3)', [reportId, actor, note]));
+
+  it('turns a pending report back into a draft with a note, clears results and logs it', async () => {
+    const id = await submittedReport('pass');
+    await sendBack(id, reviewer, '  Retake the seals photo  ');
+
+    const row = (
+      await db.query<{
+        status: string;
+        calculated_result: string | null;
+        submitted_at: Date | null;
+        sent_back_by: string;
+        send_back_note: string;
+        sent_back_at: Date | null;
+      }>(
+        'select status, calculated_result, submitted_at, sent_back_by, send_back_note, sent_back_at from public.reports where id = $1',
+        [id],
+      )
+    ).rows[0];
+    expect(row).toMatchObject({
+      status: 'draft',
+      calculated_result: null,
+      submitted_at: null,
+      sent_back_by: reviewer,
+      send_back_note: 'Retake the seals photo',
+    });
+    expect(row.sent_back_at).not.toBeNull();
+
+    const readings = await db.query<{ result: string | null; error_g: string | null }>(
+      'select result, error_g from public.readings where report_id = $1',
+      [id],
+    );
+    expect(readings.rows.every((r) => r.result === null && r.error_g === null)).toBe(true);
+    expect(await lastActivity()).toMatchObject({ message: 'Sent back for changes', actor_name: 'Kavya Rao' });
+  });
+
+  it('the technician can edit and submit it again', async () => {
+    const id = await submittedReport('pass');
+    await sendBack(id, admin, 'Check the interval');
+    await asUser(db, tech, (tx) => tx.query(`update public.reports set remarks = 'Interval checked' where id = $1`, [id]));
+    const readingIds = (await db.query<{ id: string }>('select id from public.readings where report_id = $1', [id])).rows.map(
+      (r) => r.id,
+    );
+    await submit(id, tech, results(readingIds));
+    const row = (
+      await db.query<{ status: string; remarks: string; send_back_note: string }>(
+        'select status, remarks, send_back_note from public.reports where id = $1',
+        [id],
+      )
+    ).rows[0];
+    expect(row).toMatchObject({ status: 'pending', remarks: 'Interval checked', send_back_note: 'Check the interval' });
+  });
+
+  it('needs a note', async () => {
+    const id = await submittedReport('pass');
+    expect(await errorOf(sendBack(id, reviewer, '   '))).toMatch('SEND_BACK_NOTE_MISSING');
+    expect(await errorOf(sendBack(id, reviewer, null))).toMatch('SEND_BACK_NOTE_MISSING');
+  });
+
+  it('only reviewers and admins can send back', async () => {
+    const id = await submittedReport('pass');
+    expect(await errorOf(sendBack(id, tech, 'Please redo'))).toMatch('NOT_ALLOWED');
+  });
+
+  it('only pending reports can be sent back', async () => {
+    const { id: draftId } = await seedDraft(db, tech);
+    expect(await errorOf(sendBack(draftId, reviewer, 'Please redo'))).toMatch('NOT_SUBMITTED');
+
+    const decided = await submittedReport('pass');
+    await review(decided, reviewer, 'approved');
+    expect(await errorOf(sendBack(decided, admin, 'Please redo'))).toMatch('ALREADY_REVIEWED|approved|Kavya Rao');
+  });
+
+  it('a pending report still cannot be moved back to draft directly', async () => {
+    const id = await submittedReport('pass');
+    await db.query(`select set_config('veriscale.send_back', 'off', false)`);
+    expect(
+      await errorOf(db.query(`update public.reports set status = 'draft' where id = $1`, [id])),
+    ).toMatch('BAD_STATUS_CHANGE');
+  });
+
+  it('cannot be called by signed-in users directly', async () => {
+    const id = await submittedReport('pass');
+    expect(
+      await errorOf(
+        asUser(db, reviewer, (tx) => tx.query(`select public.send_back_report($1, $2, 'x')`, [id, reviewer])),
+      ),
+    ).toMatch('permission denied');
+  });
+});
+
 describe('update_allowed_error', () => {
   const update = (ruleId: string, multiplier: number, actor: string) =>
     asService(db, (tx) => tx.query('select public.update_allowed_error($1, $2, $3)', [ruleId, multiplier, actor]));

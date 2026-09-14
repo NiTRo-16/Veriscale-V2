@@ -13,11 +13,15 @@ const MESSAGES: Record<string, string> = {
   NOT_SUBMITTED: "This report hasn't been submitted yet.",
   APPROVE_NOT_ALLOWED: "A report whose readings failed can't be approved.",
   NOTE_REQUIRED: 'Please add a note explaining why this report fails.',
+  SEND_BACK_NOTE_MISSING: 'Please add a note telling the technician what to change.',
   BAD_VALUE: "That value isn't valid.",
   RULE_NOT_FOUND: 'That rule no longer exists.',
   DRAFTS_ONLY: 'Only drafts can be deleted.',
   BAD_STATUS_CHANGE: "That change isn't allowed.",
   READ_ONLY_FIELD: "That can't be changed.",
+  WEIGHTS_OVERDUE: "This weight set is overdue for its check and can't be used in new tests.",
+  NAME_TAKEN: 'That name is already in use.',
+  RECORD_NOT_FOUND: 'That record could not be found.',
 };
 
 export const GENERIC_ERROR = 'Something went wrong. Please try again.';

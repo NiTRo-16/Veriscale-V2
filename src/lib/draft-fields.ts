@@ -51,6 +51,8 @@ export function sanitizeDraftFields(input: Record<string, unknown>): Partial<Edi
       out[key] = value === true;
     } else if (key === 'test_date') {
       out[key] = typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : null;
+    } else if (key === 'manufacturer_id' || key === 'model_id' || key === 'weight_set_id') {
+      out[key] = isUuid(value) ? value : null;
     } else {
       out[key] = typeof value === 'string' && value.trim() !== '' ? value.slice(0, MAX_TEXT) : null;
     }

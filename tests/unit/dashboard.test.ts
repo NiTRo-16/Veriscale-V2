@@ -3,11 +3,14 @@ import {
   average,
   changeVsPrevious,
   classCounts,
+  daysWaiting,
   niceCeiling,
   startOfWeek,
   statusCounts,
   submittedVsReviewed,
+  waitingBuckets,
   weekLabel,
+  weeklyDecided,
   weeklySubmitted,
   type DashboardReport,
 } from '@/lib/dashboard';
@@ -57,6 +60,55 @@ describe('submittedVsReviewed', () => {
     expect(weeks).toEqual([
       { weekStart: new Date('2026-08-31T00:00:00Z'), submitted: 1, reviewed: 0 },
       { weekStart: new Date('2026-09-07T00:00:00Z'), submitted: 1, reviewed: 2 },
+    ]);
+  });
+});
+
+describe('weeklyDecided', () => {
+  it('splits reports decided per week by outcome, counted the week they were reviewed', () => {
+    const reports = [
+      report({ status: 'approved', reviewed_at: '2026-09-08T10:00:00Z' }),
+      report({ status: 'failed', reviewed_at: '2026-09-09T10:00:00Z' }),
+      report({ status: 'approved', reviewed_at: '2026-09-01T10:00:00Z' }),
+      report({ status: 'pending', reviewed_at: null }),
+    ];
+    const weeks = weeklyDecided(reports, NOW, 2);
+    expect(weeks).toEqual([
+      { weekStart: new Date('2026-08-31T00:00:00Z'), approved: 1, failed: 0, count: 1 },
+      { weekStart: new Date('2026-09-07T00:00:00Z'), approved: 1, failed: 1, count: 2 },
+    ]);
+  });
+});
+
+describe('daysWaiting', () => {
+  it('counts whole days since submission', () => {
+    expect(daysWaiting('2026-09-12T15:00:00Z', NOW)).toBe(0);
+    expect(daysWaiting('2026-09-11T15:00:00Z', NOW)).toBe(1);
+    expect(daysWaiting('2026-09-09T09:00:00Z', NOW)).toBe(3);
+  });
+
+  it('measures against a decision date when given', () => {
+    expect(daysWaiting('2026-09-09T09:00:00Z', NOW, '2026-09-11T09:00:00Z')).toBe(2);
+  });
+});
+
+describe('waitingBuckets', () => {
+  it('buckets pending reports by days waited', () => {
+    const buckets = waitingBuckets(
+      [
+        '2026-09-12T15:00:00Z', // today
+        '2026-09-11T15:00:00Z', // 1 day
+        '2026-09-10T15:00:00Z', // 2 days
+        '2026-09-09T15:00:00Z', // 3+ days
+        '2026-09-01T15:00:00Z', // 3+ days
+      ],
+      NOW,
+    );
+    expect(buckets).toEqual([
+      { label: 'Today', count: 1 },
+      { label: '1 day', count: 1 },
+      { label: '2 days', count: 1 },
+      { label: '3+ days', count: 2 },
     ]);
   });
 });

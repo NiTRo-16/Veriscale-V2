@@ -15,6 +15,14 @@ describe('friendlyError', () => {
     expect(friendlyError({ message: 'REPORT_LOCKED' })).toBe('This report has been submitted and can no longer be changed.');
     expect(friendlyError({ message: 'NOTE_REQUIRED' })).toBe('Please add a note explaining why this report fails.');
     expect(friendlyError({ message: 'APPROVE_NOT_ALLOWED' })).toBe("A report whose readings failed can't be approved.");
+    expect(friendlyError({ message: 'SEND_BACK_NOTE_MISSING' })).toBe(
+      'Please add a note telling the technician what to change.',
+    );
+    expect(friendlyError({ message: 'WEIGHTS_OVERDUE' })).toBe(
+      "This weight set is overdue for its check and can't be used in new tests.",
+    );
+    expect(friendlyError({ message: 'NAME_TAKEN' })).toBe('That name is already in use.');
+    expect(friendlyError({ message: 'RECORD_NOT_FOUND' })).toBe('That record could not be found.');
   });
 
   it('does not confuse similar codes', () => {
